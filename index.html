@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="es" ng-app="appAsignacion">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo de Asignación y Gestión de Grupos</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+    <style>
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+            display: none !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100" ng-controller="MainController" ng-cloak>
+
+    <div ng-show="!usuarioAutenticado" class="min-h-screen flex items-center justify-center bg-gray-200">
+        <div class="bg-white p-10 rounded-lg shadow-xl text-center max-w-md w-full">
+            <div class="flex justify-center gap-4 mb-6">
+                <img src="UDG.png" class="h-16" alt="UDG" onerror="this.style.display='none'">
+                <img src="CUGDL.png" class="h-16" alt="CUGDL" onerror="this.style.display='none'">
+            </div>
+            <h2 class="text-2xl font-bold text-gray-800 mb-2">Acceso Restringido</h2>
+            <p class="text-gray-600 mb-8">Inicia sesión con tu correo institucional para acceder al Módulo de Asignación y Gestión de Grupos.</p>
+            <div id="googleButtonDiv" class="flex justify-center"></div>
+            <div ng-if="errorLogin" class="mt-4 p-3 bg-red-100 text-red-700 rounded text-sm font-semibold">
+                {{errorLogin}}
+            </div>
+        </div>
+    </div>
+
+    <div ng-show="usuarioAutenticado">
+        
+        <header class="bg-white shadow-md mb-6">
+            <div class="max-w-7xl mx-auto flex items-center justify-between p-4">
+                <div class="flex items-center gap-4">
+                    <img src="CUGDL.png" class="h-14" alt="CUGDL" onerror="this.style.display='none'">
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-800">Módulo de Asignación y Gestión de Grupos</h1>
+                        <p class="text-gray-600">Centro Universitario de Guadalajara</p>
+                    </div>
+                </div>
+                <div class="text-right text-sm bg-blue-50 p-2 rounded border border-blue-100 hidden md:block">
+                    <p class="text-gray-500">Sesión activa:</p>
+                    <p class="font-bold text-blue-700">{{correoUsuario}}</p>
+                </div>
+            </div>
+        </header>
+
+        <div class="max-w-7xl mx-auto px-4 space-y-6">
+
+            <section class="bg-white p-6 rounded-lg shadow">
+                <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Búsqueda de Grupos / Materias</h2>
+                
+                <div class="mb-6">
+                    <label class="font-semibold text-gray-600 block mb-2">Buscar por Clave de Materia:</label>
+                    <input type="text" ng-model="criterioBusqueda.clave" ng-change="ejecutarBusqueda()" 
+                           class="w-full md:w-1/3 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase" 
+                           placeholder="Ej. V2211">
+                </div>
+
+                <div ng-show="criterioBusqueda.clave.length > 0" class="overflow-x-auto border border-blue-200 rounded-lg">
+                    <div class="bg-blue-50 p-3 border-b border-blue-200 flex justify-between items-center">
+                        <h3 class="font-bold text-blue-800">Resultados de la Búsqueda ({{resultadosBusqueda.length}})</h3>
+                    </div>
+                    <table class="w-full table-auto text-sm text-left">
+                        <thead class="bg-blue-100 text-blue-900">
+                            <tr>
+                                <th class="px-3 py-2 font-semibold w-12 text-center">Sel.</th>
+                                <th class="px-3 py-2 font-semibold">CRN</th>
+                                <th class="px-3 py-2 font-semibold">Clave</th>
+                                <th class="px-3 py-2 font-semibold">Materia</th>
+                                <th class="px-3 py-2 font-semibold">Grupo</th>
+                                <th class="px-3 py-2 font-semibold text-center">Prog.</th>
+                                <th class="px-3 py-2 font-semibold text-center">Carga (Hrs)</th>
+                                <th class="px-3 py-2 font-semibold">Días</th>
+                                <th class="px-3 py-2 font-semibold">Horario</th>
+                                <th class="px-3 py-2 font-semibold">Modalidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="r in resultadosBusqueda" class="border-t hover:bg-blue-50 transition-colors" ng-class="{'bg-blue-100': r.seleccionado}">
+                                <td class="px-3 py-2 text-center">
+                                    <input type="checkbox" ng-model="r.seleccionado" ng-change="toggleSeleccionCRN(r.crn, r.seleccionado)" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                                </td>
+                                <td class="px-3 py-2 font-mono">{{r.crn}}</td>
+                                <td class="px-3 py-2 font-bold">{{r.clave}}</td>
+                                <td class="px-3 py-2">{{r.materia}}</td>
+                                <td class="px-3 py-2">{{r.grupo}}</td>
+                                <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
+                                <td class="px-3 py-2 text-center">{{r.carga_horaria}}</td>
+                                <td class="px-3 py-2">{{formatearDias(r)}}</td>
+                                <td class="px-3 py-2 whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
+                                <td class="px-3 py-2">{{r.modalidad}}</td>
+                            </tr>
+                            <tr ng-if="resultadosBusqueda.length === 0">
+                                <td colspan="10" class="px-3 py-6 text-center text-gray-500">No se encontraron grupos con esa clave.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-lg shadow border-t-4 border-green-500">
+                <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Detalle de Asignación Docente</h2>
+                <p class="text-sm text-gray-500 mb-4">Los grupos seleccionados en la tabla superior se vincularán al profesor configurado a continuación.</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="font-semibold text-gray-600 text-sm">Código de Profesor(a)</label>
+                        <input type="text" ng-model="asignacion.codigo_profesor" class="w-full border rounded p-2 focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="font-semibold text-gray-600 text-sm">Nombre del Profesor(a)</label>
+                        <input type="text" ng-model="asignacion.nombre_profesor" class="w-full border rounded p-2 focus:ring-2 focus:ring-green-500">
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-600 text-sm">Categoría</label>
+                        <input type="text" ng-model="asignacion.categoria" class="w-full border rounded p-2 bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-600 text-sm">Carga Obligada (Hrs)</label>
+                        <input type="number" ng-model="asignacion.carga_obligada" class="w-full border rounded p-2 bg-gray-50">
+                    </div>
+                    <div>
+                        <label class="font-semibold text-gray-600 text-sm">Carga Asignada Actual (Hrs)</label>
+                        <input type="number" ng-model="asignacion.carga_asignada" readonly class="w-full border rounded p-2 bg-gray-200 font-bold text-gray-700">
+                    </div>
+                    <div class="md:col-span-3 mt-2 flex justify-between items-center bg-gray-50 p-4 border rounded">
+                        <div>
+                            <span class="text-sm text-gray-600">Cantidad de registros seleccionados:</span>
+                            <span class="font-bold text-lg text-blue-600 ml-2">{{contarSeleccionados()}}</span>
+                        </div>
+                        <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow transition-all disabled:opacity-50"
+                                ng-disabled="contarSeleccionados() === 0">
+                            Vincular Profesor a Grupos
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="bg-white p-6 rounded-lg shadow">
+                <div class="flex justify-between items-center border-b pb-2 mb-4">
+                    <h2 class="text-lg font-bold text-gray-700">Vista General de Grupos Disponibles</h2>
+                    <span class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-full">Total: {{registrosBD.length}} registros</span>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full table-auto text-sm text-left border">
+                        <thead class="bg-gray-100 text-gray-700 border-b">
+                            <tr>
+                                <th class="px-3 py-2 font-semibold">ID</th>
+                                <th class="px-3 py-2 font-semibold text-center">Sem.</th>
+                                <th class="px-3 py-2 font-semibold">CRN</th>
+                                <th class="px-3 py-2 font-semibold">Clave</th>
+                                <th class="px-3 py-2 font-semibold w-64">Materia</th>
+                                <th class="px-3 py-2 font-semibold">Grupo</th>
+                                <th class="px-3 py-2 font-semibold text-center">Prog.</th>
+                                <th class="px-3 py-2 font-semibold text-center">Carga (Hrs)</th>
+                                <th class="px-3 py-2 font-semibold">Horario</th>
+                                <th class="px-3 py-2 font-semibold text-center">Cupo</th>
+                                <th class="px-3 py-2 font-semibold">Modalidad</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="r in registrosBD | limitTo: registrosPorPagina : (paginaActual - 1) * registrosPorPagina" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
+                                <td class="px-3 py-2 text-gray-500">{{r.id}}</td>
+                                <td class="px-3 py-2 text-center">{{r.semestre}}</td>
+                                <td class="px-3 py-2 font-mono text-xs">{{r.crn}}</td>
+                                <td class="px-3 py-2 font-bold text-gray-600">{{r.clave}}</td>
+                                <td class="px-3 py-2 truncate max-w-xs" title="{{r.materia}}">{{r.materia}}</td>
+                                <td class="px-3 py-2 font-semibold text-blue-700">{{r.grupo}}</td>
+                                <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
+                                <td class="px-3 py-2 text-center font-semibold">{{r.carga_horaria}}</td>
+                                <td class="px-3 py-2 text-xs whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
+                                <td class="px-3 py-2 text-center">{{r.cupo}}</td>
+                                <td class="px-3 py-2 text-xs">{{r.modalidad}}</td>
+                            </tr>
+                            <tr ng-if="registrosBD.length === 0">
+                                <td colspan="11" class="px-3 py-6 text-center text-gray-500">Cargando base de datos...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="registrosBD.length > 0">
+                    <button ng-click="paginaAnterior()" ng-disabled="paginaActual == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">&laquo; Anterior</button>
+                    <span class="font-semibold text-gray-600 text-sm">Página {{paginaActual}} de {{totalPaginas}}</span>
+                    <button ng-click="paginaSiguiente()" ng-disabled="paginaActual >= totalPaginas" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">Siguiente &raquo;</button>
+                </div>
+            </section>
+
+        </div>
+        
+        <footer class="text-center mt-10 p-6 text-gray-600">
+            <div class="flex justify-center gap-6 mb-3">
+                <img src="UDG.png" class="h-12" alt="UDG" onerror="this.style.display='none'">
+                <img src="CUGDL.png" class="h-12" alt="CUGDL" onerror="this.style.display='none'">
+            </div>
+            <p class="font-semibold">Universidad de Guadalajara</p>
+            <p>CUGDL</p>
+            <p class="text-sm mt-2">Desarrollado por la Coordinación de Programas Académicos</p>
+        </footer>
+    </div>
+
+    <script>
+        var app = angular.module("appAsignacion", []);
+
+        app.controller("MainController", function ($scope, $http, $timeout) {
+            
+            // --- ESTADOS DE AUTENTICACIÓN ---
+            $scope.usuarioAutenticado = false; 
+            $scope.correoUsuario = "";
+            $scope.errorLogin = null;
+
+            // --- VARIABLES DEL SISTEMA CRUD ---
+            $scope.registrosBD = []; 
+            $scope.resultadosBusqueda = []; 
+            
+            $scope.criterioBusqueda = { clave: "" };
+            
+            $scope.asignacion = {
+                codigo_profesor: "",
+                nombre_profesor: "",
+                categoria: "",
+                carga_obligada: null,
+                carga_asignada: 0,
+                grupos_asignados: 0
+            };
+
+            // Paginación Vista General
+            $scope.paginaActual = 1;
+            $scope.registrosPorPagina = 15;
+            $scope.totalPaginas = 1;
+
+            // --- AUTENTICACIÓN GOOGLE ---
+            window.handleCredentialResponse = function(response) {
+                if (!response || !response.credential) return;
+                try {
+                    const data = jwt_decode(response.credential);
+                    const email = data.email || "";
+                    if(email.endsWith("@cugdl.udg.mx") || email.endsWith("@udg.mx") || email.endsWith("@alumnos.udg.mx") || email.endsWith("@gmail.com")) {
+                        $timeout(function() {
+                            $scope.usuarioAutenticado = true;
+                            $scope.correoUsuario = email;
+                            $scope.errorLogin = null;
+                            $scope.cargarBaseDatos();
+                        });
+                    } else {
+                        $timeout(() => $scope.errorLogin = "Acceso denegado. Utiliza una cuenta institucional.");
+                    }
+                } catch (err) {
+                    $timeout(() => $scope.errorLogin = "Error técnico al leer tu cuenta.");
+                }
+            };
+
+            window.onload = function () {
+                google.accounts.id.initialize({
+                    // Reemplaza con tu Client ID de Google real
+                    client_id: "918717903490-c11rpq9l7g8hq9phln457no1j379bsf5.apps.googleusercontent.com", 
+                    callback: handleCredentialResponse
+                });
+                google.accounts.id.renderButton(
+                    document.getElementById("googleButtonDiv"),
+                    { theme: "outline", size: "large", width: 300 }
+                );
+            };
+
+            // --- LÓGICA DE DATOS (FASE 1) ---
+
+            $scope.cargarBaseDatos = function () {
+                $http.get("BD_2026B.json")
+                    .then(function (response) {
+                        $scope.registrosBD = angular.isArray(response.data) ? response.data : (response.data.registros || []);
+                        $scope.actualizarPaginacion();
+                    })
+                    .catch(function (error) {
+                        console.error("Error al cargar BD_2026B.json:", error);
+                        alert("No se pudo cargar la base de datos local BD_2026B.json. Asegúrate de que el archivo exista en la misma ruta.");
+                    });
+            };
+
+            $scope.ejecutarBusqueda = function() {
+                let busqueda = $scope.criterioBusqueda.clave.toUpperCase().trim();
+                
+                if (busqueda === "") {
+                    $scope.resultadosBusqueda = [];
+                    return;
+                }
+
+                $scope.resultadosBusqueda = $scope.registrosBD.filter(function(registro) {
+                    if(!registro.clave) return false;
+                    return registro.clave.toUpperCase().includes(busqueda);
+                });
+            };
+
+            // Función para seleccionar/deseleccionar todos los registros con el mismo CRN
+            $scope.toggleSeleccionCRN = function(crn, estadoActual) {
+                if (!crn) return;
+                
+                // Recorremos los resultados de búsqueda para emparejar el estado del checkbox
+                angular.forEach($scope.resultadosBusqueda, function(registro) {
+                    if (registro.crn === crn) {
+                        registro.seleccionado = estadoActual;
+                    }
+                });
+            };
+
+            $scope.formatearDias = function(registro) {
+                let dias = [];
+                if(registro.l) dias.push(registro.l);
+                if(registro.m) dias.push(registro.m);
+                if(registro.i) dias.push(registro.i); // i = miércoles
+                if(registro.j) dias.push(registro.j);
+                if(registro.v) dias.push(registro.v);
+                if(registro.s) dias.push(registro.s);
+                return dias.join("") || "N/A";
+            };
+
+            $scope.contarSeleccionados = function() {
+                if(!$scope.resultadosBusqueda) return 0;
+                return $scope.resultadosBusqueda.filter(r => r.seleccionado).length;
+            };
+
+            // --- LÓGICA DE PAGINACIÓN ---
+            $scope.actualizarPaginacion = function() {
+                $scope.totalPaginas = Math.ceil($scope.registrosBD.length / $scope.registrosPorPagina);
+                if ($scope.totalPaginas === 0) $scope.totalPaginas = 1;
+                if ($scope.paginaActual > $scope.totalPaginas) $scope.paginaActual = $scope.totalPaginas;
+            };
+
+            $scope.paginaAnterior = function() {
+                if ($scope.paginaActual > 1) { $scope.paginaActual--; }
+            };
+
+            $scope.paginaSiguiente = function() {
+                if ($scope.paginaActual < $scope.totalPaginas) { $scope.paginaActual++; }
+            };
+
+        });
+    </script>
+</body>
+</html>
