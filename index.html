@@ -9,9 +9,9 @@
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
     <style>
-        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
-            display: none !important;
-        }
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak { display: none !important; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
@@ -24,9 +24,9 @@
                 <img src="CUGDL.png" class="h-16" alt="CUGDL" onerror="this.style.display='none'">
             </div>
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Acceso Restringido</h2>
-            <p class="text-gray-600 mb-8">Inicia sesión con tu correo institucional para acceder al Módulo de Asignación y Gestión de Grupos.</p>
+            <p class="text-gray-600 mb-8">Inicia sesión con tu correo institucional para acceder al Módulo.</p>
             <div id="googleButtonDiv" class="flex justify-center"></div>
-            <div ng-if="errorLogin" class="mt-4 p-3 bg-red-100 text-red-700 rounded text-sm font-semibold">
+            <div ng-if="errorLogin" class="mt-4 p-3 bg-red-100 text-red-700 rounded text-sm font-semibold text-center">
                 {{errorLogin}}
             </div>
         </div>
@@ -39,7 +39,7 @@
                 <div class="flex items-center gap-4">
                     <img src="CUGDL.png" class="h-14" alt="CUGDL" onerror="this.style.display='none'">
                     <div>
-                        <h1 class="text-xl font-bold text-gray-800">Módulo de Asignación y Gestión de Grupos</h1>
+                        <h1 class="text-xl font-bold text-gray-800">Módulo de Asignación y Gestión</h1>
                         <p class="text-gray-600">Centro Universitario de Guadalajara</p>
                     </div>
                 </div>
@@ -50,148 +50,265 @@
             </div>
         </header>
 
-        <div class="max-w-7xl mx-auto px-4 space-y-6">
+        <div ng-show="cargandoDatos" class="max-w-7xl mx-auto px-4 mb-6">
+            <div class="bg-blue-50 border border-blue-200 text-blue-800 rounded-lg p-4 flex items-center justify-center gap-4 shadow-sm">
+                <div class="loader"></div>
+                <span class="font-bold text-lg">Sincronizando con el servidor en tiempo real...</span>
+            </div>
+        </div>
 
-            <section class="bg-white p-6 rounded-lg shadow">
-                <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Búsqueda de Grupos / Materias</h2>
-                
-                <div class="mb-6">
-                    <label class="font-semibold text-gray-600 block mb-2">Buscar por Clave de Materia:</label>
-                    <input type="text" ng-model="criterioBusqueda.clave" ng-change="ejecutarBusqueda()" 
-                           class="w-full md:w-1/3 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase" 
-                           placeholder="Ej. V2211">
-                </div>
+        <div class="max-w-7xl mx-auto px-4 space-y-6" ng-show="!cargandoDatos">
 
-                <div ng-show="criterioBusqueda.clave.length > 0" class="overflow-x-auto border border-blue-200 rounded-lg">
-                    <div class="bg-blue-50 p-3 border-b border-blue-200 flex justify-between items-center">
-                        <h3 class="font-bold text-blue-800">Resultados de la Búsqueda ({{resultadosBusqueda.length}})</h3>
-                    </div>
-                    <table class="w-full table-auto text-sm text-left">
-                        <thead class="bg-blue-100 text-blue-900">
-                            <tr>
-                                <th class="px-3 py-2 font-semibold w-12 text-center">Sel.</th>
-                                <th class="px-3 py-2 font-semibold">CRN</th>
-                                <th class="px-3 py-2 font-semibold">Clave</th>
-                                <th class="px-3 py-2 font-semibold">Materia</th>
-                                <th class="px-3 py-2 font-semibold">Grupo</th>
-                                <th class="px-3 py-2 font-semibold text-center">Prog.</th>
-                                <th class="px-3 py-2 font-semibold text-center">Carga (Hrs)</th>
-                                <th class="px-3 py-2 font-semibold">Días</th>
-                                <th class="px-3 py-2 font-semibold">Horario</th>
-                                <th class="px-3 py-2 font-semibold">Modalidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="r in resultadosBusqueda" class="border-t hover:bg-blue-50 transition-colors" ng-class="{'bg-blue-100': r.seleccionado}">
-                                <td class="px-3 py-2 text-center">
-                                    <input type="checkbox" ng-model="r.seleccionado" ng-change="toggleSeleccionCRN(r.crn, r.seleccionado)" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
-                                </td>
-                                <td class="px-3 py-2 font-mono">{{r.crn}}</td>
-                                <td class="px-3 py-2 font-bold">{{r.clave}}</td>
-                                <td class="px-3 py-2">{{r.materia}}</td>
-                                <td class="px-3 py-2">{{r.grupo}}</td>
-                                <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
-                                <td class="px-3 py-2 text-center">{{r.carga_horaria}}</td>
-                                <td class="px-3 py-2">{{formatearDias(r)}}</td>
-                                <td class="px-3 py-2 whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
-                                <td class="px-3 py-2">{{r.modalidad}}</td>
-                            </tr>
-                            <tr ng-if="resultadosBusqueda.length === 0">
-                                <td colspan="10" class="px-3 py-6 text-center text-gray-500">No se encontraron grupos con esa clave.</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
+            <div class="flex space-x-2 border-b-2 border-gray-200 pb-2">
+                <button ng-click="vistaPrincipal = 'grupos'" 
+                        ng-class="vistaPrincipal == 'grupos' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
+                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors">
+                    Asignación de Grupos
+                </button>
+                <button ng-click="vistaPrincipal = 'profesores'" 
+                        ng-class="vistaPrincipal == 'profesores' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
+                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors">
+                    Catálogo de Profesores
+                </button>
+            </div>
 
-            <section class="bg-white p-6 rounded-lg shadow border-t-4 border-green-500">
-                <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Detalle de Asignación Docente</h2>
-                <p class="text-sm text-gray-500 mb-4">Los grupos seleccionados en la tabla superior se vincularán al profesor configurado a continuación.</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                        <label class="font-semibold text-gray-600 text-sm">Código de Profesor(a)</label>
-                        <input type="text" ng-model="asignacion.codigo_profesor" class="w-full border rounded p-2 focus:ring-2 focus:ring-green-500">
-                    </div>
-                    <div class="md:col-span-2">
-                        <label class="font-semibold text-gray-600 text-sm">Nombre del Profesor(a)</label>
-                        <input type="text" ng-model="asignacion.nombre_profesor" class="w-full border rounded p-2 focus:ring-2 focus:ring-green-500">
-                    </div>
-                    <div>
-                        <label class="font-semibold text-gray-600 text-sm">Categoría</label>
-                        <input type="text" ng-model="asignacion.categoria" class="w-full border rounded p-2 bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="font-semibold text-gray-600 text-sm">Carga Obligada (Hrs)</label>
-                        <input type="number" ng-model="asignacion.carga_obligada" class="w-full border rounded p-2 bg-gray-50">
-                    </div>
-                    <div>
-                        <label class="font-semibold text-gray-600 text-sm">Carga Asignada Actual (Hrs)</label>
-                        <input type="number" ng-model="asignacion.carga_asignada" readonly class="w-full border rounded p-2 bg-gray-200 font-bold text-gray-700">
-                    </div>
-                    <div class="md:col-span-3 mt-2 flex justify-between items-center bg-gray-50 p-4 border rounded">
-                        <div>
-                            <span class="text-sm text-gray-600">Cantidad de registros seleccionados:</span>
-                            <span class="font-bold text-lg text-blue-600 ml-2">{{contarSeleccionados()}}</span>
+            <div ng-show="vistaPrincipal == 'grupos'" class="space-y-6">
+                <section class="bg-white p-6 rounded-lg shadow">
+                    <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Búsqueda de Grupos / Materias Disponibles</h2>
+                    
+                    <div class="mb-6 flex gap-4 items-end">
+                        <div class="flex-1 max-w-md">
+                            <label class="font-semibold text-gray-600 block mb-2">Buscar por Clave de Materia:</label>
+                            <input type="text" ng-model="criterioBusqueda.clave" ng-change="ejecutarBusqueda()" 
+                                   class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase" 
+                                   placeholder="Ej. V2211">
                         </div>
-                        <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded shadow transition-all disabled:opacity-50"
-                                ng-disabled="contarSeleccionados() === 0">
-                            Vincular Profesor a Grupos
+                    </div>
+
+                    <div ng-show="criterioBusqueda.clave.length > 0" class="overflow-x-auto border border-blue-200 rounded-lg">
+                        <div class="bg-blue-50 p-3 border-b border-blue-200 flex justify-between items-center">
+                            <h3 class="font-bold text-blue-800">Resultados Disponibles ({{resultadosBusqueda.length}})</h3>
+                        </div>
+                        <table class="w-full table-auto text-sm text-left">
+                            <thead class="bg-blue-100 text-blue-900">
+                                <tr>
+                                    <th class="px-3 py-2 font-semibold w-12 text-center">Sel.</th>
+                                    <th class="px-3 py-2 font-semibold">CRN</th>
+                                    <th class="px-3 py-2 font-semibold">Clave</th>
+                                    <th class="px-3 py-2 font-semibold">Materia</th>
+                                    <th class="px-3 py-2 font-semibold">Grupo</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Prog.</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Carga (Hrs)</th>
+                                    <th class="px-3 py-2 font-semibold">Días</th>
+                                    <th class="px-3 py-2 font-semibold">Horario</th>
+                                    <th class="px-3 py-2 font-semibold">Modalidad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="r in resultadosBusqueda" class="border-t hover:bg-blue-50 transition-colors" ng-class="{'bg-blue-100': r.seleccionado}">
+                                    <td class="px-3 py-2 text-center">
+                                        <input type="checkbox" ng-model="r.seleccionado" ng-change="toggleSeleccionCRN(r.crn, r.seleccionado)" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 cursor-pointer">
+                                    </td>
+                                    <td class="px-3 py-2 font-mono">{{r.crn}}</td>
+                                    <td class="px-3 py-2 font-bold">{{r.clave}}</td>
+                                    <td class="px-3 py-2">{{r.materia}}</td>
+                                    <td class="px-3 py-2">{{r.grupo}}</td>
+                                    <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
+                                    <td class="px-3 py-2 text-center">{{r.carga_horaria}}</td>
+                                    <td class="px-3 py-2">{{formatearDias(r)}}</td>
+                                    <td class="px-3 py-2 whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
+                                    <td class="px-3 py-2">{{r.modalidad}}</td>
+                                </tr>
+                                <tr ng-if="resultadosBusqueda.length === 0">
+                                    <td colspan="10" class="px-3 py-6 text-center text-gray-500">No se encontraron grupos DISPONIBLES con esa clave. (Podrían estar ya asignados).</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section class="bg-white p-6 rounded-lg shadow border-t-4 border-green-500">
+                    <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Detalle de Asignación Docente</h2>
+                    <p class="text-sm text-gray-500 mb-4">Busca al profesor(a) para cargar sus datos y luego vincula los grupos seleccionados.</p>
+                    
+                    <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-200 flex flex-col md:flex-row gap-4 items-end">
+                        <div class="flex-1 w-full">
+                            <label class="font-semibold text-green-800 text-sm block mb-1">Buscar y Seleccionar Profesor(a):</label>
+                            <input type="text" ng-model="busquedaDocenteAsignacion" list="listaProfesoresAsignacion" ng-change="seleccionarProfesorDesdeLista()" class="w-full border border-green-300 rounded p-2 focus:ring-2 focus:ring-green-600 bg-white shadow-inner" placeholder="Escribe código o nombre y selecciona de la lista...">
+                            <datalist id="listaProfesoresAsignacion">
+                                <option ng-repeat="p in profesoresBD" value="{{p.codigo}} - {{p.profesor}}"></option>
+                            </datalist>
+                        </div>
+                        <button ng-click="limpiarBusquedaProfesor()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded shadow transition-all whitespace-nowrap">
+                            Limpiar Búsqueda
                         </button>
                     </div>
-                </div>
-            </section>
 
-            <section class="bg-white p-6 rounded-lg shadow">
-                <div class="flex justify-between items-center border-b pb-2 mb-4">
-                    <h2 class="text-lg font-bold text-gray-700">Vista General de Grupos Disponibles</h2>
-                    <span class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-full">Total: {{registrosBD.length}} registros</span>
-                </div>
-                
-                <div class="overflow-x-auto">
-                    <table class="w-full table-auto text-sm text-left border">
-                        <thead class="bg-gray-100 text-gray-700 border-b">
-                            <tr>
-                                <th class="px-3 py-2 font-semibold">ID</th>
-                                <th class="px-3 py-2 font-semibold text-center">Sem.</th>
-                                <th class="px-3 py-2 font-semibold">CRN</th>
-                                <th class="px-3 py-2 font-semibold">Clave</th>
-                                <th class="px-3 py-2 font-semibold w-64">Materia</th>
-                                <th class="px-3 py-2 font-semibold">Grupo</th>
-                                <th class="px-3 py-2 font-semibold text-center">Prog.</th>
-                                <th class="px-3 py-2 font-semibold text-center">Carga (Hrs)</th>
-                                <th class="px-3 py-2 font-semibold">Horario</th>
-                                <th class="px-3 py-2 font-semibold text-center">Cupo</th>
-                                <th class="px-3 py-2 font-semibold">Modalidad</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr ng-repeat="r in registrosBD | limitTo: registrosPorPagina : (paginaActual - 1) * registrosPorPagina" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
-                                <td class="px-3 py-2 text-gray-500">{{r.id}}</td>
-                                <td class="px-3 py-2 text-center">{{r.semestre}}</td>
-                                <td class="px-3 py-2 font-mono text-xs">{{r.crn}}</td>
-                                <td class="px-3 py-2 font-bold text-gray-600">{{r.clave}}</td>
-                                <td class="px-3 py-2 truncate max-w-xs" title="{{r.materia}}">{{r.materia}}</td>
-                                <td class="px-3 py-2 font-semibold text-blue-700">{{r.grupo}}</td>
-                                <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
-                                <td class="px-3 py-2 text-center font-semibold">{{r.carga_horaria}}</td>
-                                <td class="px-3 py-2 text-xs whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
-                                <td class="px-3 py-2 text-center">{{r.cupo}}</td>
-                                <td class="px-3 py-2 text-xs">{{r.modalidad}}</td>
-                            </tr>
-                            <tr ng-if="registrosBD.length === 0">
-                                <td colspan="11" class="px-3 py-6 text-center text-gray-500">Cargando base de datos...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="font-semibold text-gray-600 text-sm">Código</label>
+                            <input type="text" ng-model="asignacion.codigo_profesor" readonly class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-700 focus:outline-none">
+                        </div>
+                        <div class="md:col-span-2">
+                            <label class="font-semibold text-gray-600 text-sm">Nombre del Profesor(a)</label>
+                            <input type="text" ng-model="asignacion.nombre_profesor" readonly class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="font-semibold text-gray-600 text-sm">Categoría</label>
+                            <input type="text" ng-model="asignacion.categoria" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="font-semibold text-gray-600 text-sm">Carga Obligada</label>
+                            <input type="text" ng-model="asignacion.carga_obligada" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 text-center font-semibold focus:outline-none">
+                        </div>
+                        <div class="md:col-span-2 flex flex-col justify-center">
+                            <label class="font-semibold text-gray-600 text-sm">Carga Asignada Actual (Registrada en servidor)</label>
+                            <div class="flex items-center space-x-2">
+                                <input type="text" ng-model="asignacion.carga_asignada_previa" readonly class="w-24 border rounded p-2 bg-gray-100 font-bold text-indigo-700 text-center focus:outline-none shadow-inner">
+                                <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded" ng-show="calcularCargaSeleccionada() > 0">
+                                    (+ {{calcularCargaSeleccionada()}} hrs por asignar)
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="md:col-span-4 mt-2 flex flex-col md:flex-row justify-between items-center bg-gray-50 p-4 border rounded gap-4">
+                            <div>
+                                <span class="text-sm text-gray-600">Grupos seleccionados para asignar (CRNs únicos):</span>
+                                <span class="font-bold text-xl text-blue-600 ml-2">{{contarSeleccionados()}}</span>
+                            </div>
+                            
+                            <button ng-click="vincularProfesor()" 
+                                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-lg shadow transition-all disabled:opacity-50 disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                                    ng-disabled="contarSeleccionados() === 0 || !asignacion.codigo_profesor || guardandoAsignacion">
+                                <div ng-show="guardandoAsignacion" class="loader" style="width: 20px; height: 20px; border-width: 3px; border-top-color: white;"></div>
+                                <span>{{ guardandoAsignacion ? 'Guardando...' : 'Vincular Profesor a Grupos' }}</span>
+                            </button>
+                        </div>
+                    </div>
+                </section>
 
-                <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="registrosBD.length > 0">
-                    <button ng-click="paginaAnterior()" ng-disabled="paginaActual == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">&laquo; Anterior</button>
-                    <span class="font-semibold text-gray-600 text-sm">Página {{paginaActual}} de {{totalPaginas}}</span>
-                    <button ng-click="paginaSiguiente()" ng-disabled="paginaActual >= totalPaginas" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed">Siguiente &raquo;</button>
-                </div>
-            </section>
+                <section class="bg-white p-6 rounded-lg shadow">
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-gray-700">Catálogo de Grupos Disponibles (Sin asignar)</h2>
+                        <span class="bg-gray-200 text-gray-700 text-xs font-bold px-3 py-1 rounded-full">Disponibles: {{registrosBD.length}} registros</span>
+                    </div>
+
+                    <div class="flex flex-col md:flex-row gap-4 mb-4 bg-gray-50 p-3 rounded border">
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-600">Filtrar por Programa:</label>
+                            <select ng-model="filtroGeneral.programa_educativo" class="w-full border rounded p-1 text-sm">
+                                <option value="">Todos</option>
+                                <option ng-repeat="prog in obtenerProgramasUnicos()" value="{{prog}}">{{prog}}</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-xs font-semibold text-gray-600">Filtrar por Departamento:</label>
+                            <select ng-model="filtroGeneral.departamento" class="w-full border rounded p-1 text-sm">
+                                <option value="">Todos</option>
+                                <option ng-repeat="dep in obtenerDepartamentosUnicos()" value="{{dep}}">{{dep}}</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto text-sm text-left border">
+                            <thead class="bg-gray-100 text-gray-700 border-b">
+                                <tr>
+                                    <th class="px-3 py-2 font-semibold">ID</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Sem.</th>
+                                    <th class="px-3 py-2 font-semibold">CRN</th>
+                                    <th class="px-3 py-2 font-semibold">Clave</th>
+                                    <th class="px-3 py-2 font-semibold w-64">Materia</th>
+                                    <th class="px-3 py-2 font-semibold">Grupo</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Prog.</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Carga</th>
+                                    <th class="px-3 py-2 font-semibold">Horario</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Cupo</th>
+                                    <th class="px-3 py-2 font-semibold">Modalidad</th>
+                                    <th class="px-3 py-2 font-semibold">Departamento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="r in registrosBD | filter:filtroGeneral | limitTo: registrosPorPagina : (paginaActual - 1) * registrosPorPagina" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
+                                    <td class="px-3 py-2 text-gray-500">{{r.id}}</td>
+                                    <td class="px-3 py-2 text-center">{{r.semestre}}</td>
+                                    <td class="px-3 py-2 font-mono text-xs">{{r.crn}}</td>
+                                    <td class="px-3 py-2 font-bold text-gray-600">{{r.clave}}</td>
+                                    <td class="px-3 py-2 truncate max-w-xs" title="{{r.materia}}">{{r.materia}}</td>
+                                    <td class="px-3 py-2 font-semibold text-blue-700">{{r.grupo}}</td>
+                                    <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
+                                    <td class="px-3 py-2 text-center font-semibold">{{r.carga_horaria}}</td>
+                                    <td class="px-3 py-2 text-xs whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
+                                    <td class="px-3 py-2 text-center">{{r.cupo}}</td>
+                                    <td class="px-3 py-2 text-xs">{{r.modalidad}}</td>
+                                    <td class="px-3 py-2 text-xs">{{r.departamento}}</td>
+                                </tr>
+                                <tr ng-if="registrosBD.length === 0">
+                                    <td colspan="12" class="px-3 py-6 text-center text-gray-500 italic">No hay grupos disponibles.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="registrosBD.length > 0">
+                        <button ng-click="paginaAnterior()" ng-disabled="paginaActual == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50">&laquo; Anterior</button>
+                        <span class="font-semibold text-gray-600 text-sm">Página {{paginaActual}} de {{totalPaginas}}</span>
+                        <button ng-click="paginaSiguiente()" ng-disabled="paginaActual >= totalPaginas" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50">Siguiente &raquo;</button>
+                    </div>
+                </section>
+            </div>
+
+            <div ng-show="vistaPrincipal == 'profesores'" class="space-y-6">
+                <section class="bg-white p-6 rounded-lg shadow border-t-4 border-indigo-500">
+                    <div class="flex justify-between items-center border-b pb-2 mb-4">
+                        <h2 class="text-lg font-bold text-gray-700">Catálogo de Profesores (2026B)</h2>
+                        <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full">Total: {{profesoresBD.length}} docentes</span>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="font-semibold text-gray-600 block mb-2">Buscador Rápido:</label>
+                        <input type="text" ng-model="busquedaProfesor" 
+                               class="w-full md:w-1/3 border border-gray-300 rounded p-2 focus:ring-2 focus:ring-indigo-500 focus:outline-none" 
+                               placeholder="Buscar por código, nombre o categoría...">
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full table-auto text-sm text-left border">
+                            <thead class="bg-indigo-50 text-indigo-900 border-b">
+                                <tr>
+                                    <th class="px-3 py-2 font-semibold">Código</th>
+                                    <th class="px-3 py-2 font-semibold w-64">Nombre del Profesor(a)</th>
+                                    <th class="px-3 py-2 font-semibold">Categoría</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Carga Obligada (Hrs)</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Carga Asignada Actual</th>
+                                    <th class="px-3 py-2 font-semibold text-center">Grupos Asignados</th>
+                                    <th class="px-3 py-2 font-semibold">Departamento Adscripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="p in profesoresFiltrados() | limitTo: profesoresPorPagina : (paginaActualProf - 1) * profesoresPorPagina" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
+                                    <td class="px-3 py-2 font-mono text-gray-600">{{p.codigo || "-"}}</td>
+                                    <td class="px-3 py-2 font-bold text-gray-800">{{p.profesor || "-"}}</td>
+                                    <td class="px-3 py-2 text-xs">{{p.categoria || "-"}}</td>
+                                    <td class="px-3 py-2 text-center font-bold text-indigo-600 bg-indigo-50">{{calcularCargaObligada(p)}}</td>
+                                    <td class="px-3 py-2 text-center text-gray-800 font-bold bg-green-50">{{p.carga_asignada_actual}}</td>
+                                    <td class="px-3 py-2 text-center">{{p.grupos_asignados}}</td>
+                                    <td class="px-3 py-2 text-xs">{{p.departamento_adscripcion || "-"}}</td>
+                                </tr>
+                                <tr ng-if="profesoresBD.length === 0">
+                                    <td colspan="7" class="px-3 py-6 text-center text-gray-500">Cargando base de datos de profesores...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="profesoresBD.length > 0">
+                        <button ng-click="paginaAnteriorProf()" ng-disabled="paginaActualProf == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50">&laquo; Anterior</button>
+                        <span class="font-semibold text-gray-600 text-sm">Página {{paginaActualProf}} de {{totalPaginasProf}}</span>
+                        <button ng-click="paginaSiguienteProf()" ng-disabled="paginaActualProf >= totalPaginasProf" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold hover:bg-gray-100 disabled:opacity-50">Siguiente &raquo;</button>
+                    </div>
+                </section>
+            </div>
 
         </div>
         
@@ -209,34 +326,53 @@
     <script>
         var app = angular.module("appAsignacion", []);
 
-        app.controller("MainController", function ($scope, $http, $timeout) {
+        app.controller("MainController", function ($scope, $http, $timeout, $filter, $q) {
             
-            // --- ESTADOS DE AUTENTICACIÓN ---
+            // --- VARIABLES DE CONFIGURACIÓN GLOBAL ---
+            $scope.config = {}; 
+
+            // --- ESTADOS DE LA UI ---
             $scope.usuarioAutenticado = false; 
             $scope.correoUsuario = "";
             $scope.errorLogin = null;
+            $scope.vistaPrincipal = 'grupos'; 
+            $scope.cargandoDatos = false;
+            $scope.guardandoAsignacion = false; 
 
-            // --- VARIABLES DEL SISTEMA CRUD ---
+            // --- VARIABLES DEL SISTEMA ---
             $scope.registrosBD = []; 
             $scope.resultadosBusqueda = []; 
-            
             $scope.criterioBusqueda = { clave: "" };
+            $scope.filtroGeneral = {};
+            $scope.busquedaDocenteAsignacion = "";
+            $scope.asignacion = { codigo_profesor: "", nombre_profesor: "", categoria: "", carga_obligada: "", carga_asignada_previa: 0 };
             
-            $scope.asignacion = {
-                codigo_profesor: "",
-                nombre_profesor: "",
-                categoria: "",
-                carga_obligada: null,
-                carga_asignada: 0,
-                grupos_asignados: 0
+            // --- VARIABLES PAGINACIÓN ---
+            $scope.paginaActual = 1; $scope.registrosPorPagina = 15; $scope.totalPaginas = 1;
+            $scope.profesoresBD = []; $scope.busquedaProfesor = "";
+            $scope.paginaActualProf = 1; $scope.profesoresPorPagina = 15; $scope.totalPaginasProf = 1;
+
+            // ==========================================
+            // INICIALIZACIÓN Y CONFIGURACIÓN
+            // ==========================================
+            window.onload = function () {
+                $http.get("config.json").then(function(response) {
+                    $scope.config = response.data;
+                    
+                    google.accounts.id.initialize({
+                        client_id: $scope.config.CLIENT_ID, 
+                        callback: handleCredentialResponse
+                    });
+                    google.accounts.id.renderButton(
+                        document.getElementById("googleButtonDiv"),
+                        { theme: "outline", size: "large", width: 300 }
+                    );
+                }).catch(function(error) {
+                    console.error("Error crítico: No se pudo cargar config.json", error);
+                    $scope.errorLogin = "Error del sistema: No se encontraron las credenciales de configuración.";
+                });
             };
 
-            // Paginación Vista General
-            $scope.paginaActual = 1;
-            $scope.registrosPorPagina = 15;
-            $scope.totalPaginas = 1;
-
-            // --- AUTENTICACIÓN GOOGLE ---
             window.handleCredentialResponse = function(response) {
                 if (!response || !response.credential) return;
                 try {
@@ -247,7 +383,7 @@
                             $scope.usuarioAutenticado = true;
                             $scope.correoUsuario = email;
                             $scope.errorLogin = null;
-                            $scope.cargarBaseDatos();
+                            $scope.sincronizarSistema();
                         });
                     } else {
                         $timeout(() => $scope.errorLogin = "Acceso denegado. Utiliza una cuenta institucional.");
@@ -257,55 +393,161 @@
                 }
             };
 
-            window.onload = function () {
-                google.accounts.id.initialize({
-                    // Reemplaza con tu Client ID de Google real
-                    client_id: "918717903490-c11rpq9l7g8hq9phln457no1j379bsf5.apps.googleusercontent.com", 
-                    callback: handleCredentialResponse
-                });
-                google.accounts.id.renderButton(
-                    document.getElementById("googleButtonDiv"),
-                    { theme: "outline", size: "large", width: 300 }
-                );
+            // ==========================================
+            // NÚCLEO: SINCRONIZACIÓN DE DATOS
+            // ==========================================
+            $scope.sincronizarSistema = function() {
+                if(!$scope.config.API_URL) {
+                    alert("Error: La URL de la API no está definida en config.json.");
+                    return;
+                }
+
+                $scope.cargandoDatos = true;
+
+                let promesaGrupos = $http.get("BD_2026B.json");
+                let promesaProfes = $http.get("BD_Profesores_2026B.json");
+                let promesaBackend = $http.get($scope.config.API_URL);
+
+                $q.all([promesaGrupos, promesaProfes, promesaBackend])
+                    .then(function(respuestas) {
+                        let resGrupos = respuestas[0].data;
+                        let resProfesores = respuestas[1].data;
+                        let resBackend = respuestas[2].data;
+
+                        if (resBackend.status === 'error') {
+                            alert("Error en el servidor de Drive: " + resBackend.message);
+                            $scope.cargandoDatos = false;
+                            return;
+                        }
+
+                        let asignacionesHistoricas = resBackend.asignaciones || [];
+                        let estadoProfesores = resBackend.profesores || [];
+
+                        // 1. FILTRADO DE GRUPOS (Ocultar los ya asignados)
+                        let crnsAsignados = asignacionesHistoricas.map(a => a.crn.toString());
+                        let catalogoGrupos = angular.isArray(resGrupos) ? resGrupos : (resGrupos.registros || []);
+                        
+                        $scope.registrosBD = catalogoGrupos.filter(g => !crnsAsignados.includes(g.crn.toString()));
+                        
+                        // 2. FUSIÓN DE PROFESORES (Conectar carga en vivo)
+                        let catalogoProfesores = angular.isArray(resProfesores) ? resProfesores : (resProfesores.registros || []);
+                        
+                        $scope.profesoresBD = catalogoProfesores.map(pBase => {
+                            let pLive = estadoProfesores.find(pb => pb.codigo_profesor == pBase.codigo);
+                            if (pLive) {
+                                pBase.carga_asignada_actual = pLive.carga_asignada_actual;
+                                pBase.grupos_asignados = pLive.total_crns_asignados;
+                            } else {
+                                pBase.carga_asignada_actual = 0;
+                                pBase.grupos_asignados = 0;
+                            }
+                            return pBase;
+                        });
+
+                        $scope.actualizarPaginacion();
+                        $scope.actualizarPaginacionProf();
+                        $scope.cargandoDatos = false;
+                    })
+                    .catch(function(error) {
+                        console.error("Fallo general al sincronizar:", error);
+                        alert("Fallo la sincronización. Revisa tu conexión o que los archivos JSON locales existan.");
+                        $scope.cargandoDatos = false;
+                    });
             };
 
-            // --- LÓGICA DE DATOS (FASE 1) ---
+            // ==========================================
+            // LÓGICA DE ASIGNACIÓN Y GUARDADO POST (SPRINT 3)
+            // ==========================================
+            $scope.vincularProfesor = function() {
+                if (!$scope.asignacion.codigo_profesor || $scope.contarSeleccionados() === 0) return;
 
-            $scope.cargarBaseDatos = function () {
-                $http.get("BD_2026B.json")
-                    .then(function (response) {
-                        $scope.registrosBD = angular.isArray(response.data) ? response.data : (response.data.registros || []);
-                        $scope.actualizarPaginacion();
+                // 1. Recopilar grupos seleccionados
+                let gruposAEnviar = [];
+                $scope.resultadosBusqueda.forEach(r => {
+                    if (r.seleccionado) {
+                        gruposAEnviar.push({
+                            id_registro_json: r.id,
+                            crn: r.crn,
+                            clave_materia: r.clave,
+                            carga_horaria: r.carga_horaria,
+                            dias: $scope.formatearDias(r),
+                            hora_inicio: r.hora_inicio,
+                            hora_fin: r.hora_fin
+                        });
+                    }
+                });
+
+                // 2. Construir Payload
+                let payload = {
+                    accion: 'ASIGNAR_GRUPOS',
+                    ciclo_escolar: '2026B',
+                    usuario: $scope.correoUsuario,
+                    profesor: {
+                        codigo: $scope.asignacion.codigo_profesor,
+                        nombre: $scope.asignacion.nombre_profesor
+                    },
+                    grupos: gruposAEnviar
+                };
+
+                $scope.guardandoAsignacion = true; // Mostramos loader en el botón
+
+                // 3. Petición POST a Google Apps Script (TRUCO BYPASS CORS text/plain)
+                let requestConfig = {
+                    headers: {
+                        'Content-Type': 'text/plain;charset=utf-8'
+                    }
+                };
+
+                $http.post($scope.config.API_URL, JSON.stringify(payload), requestConfig)
+                    .then(function(response) {
+                        $scope.guardandoAsignacion = false;
+                        let res = response.data;
+
+                        if (res.status === 'success') {
+                            alert("✅ " + res.message);
+
+                            // --- ACTUALIZACIÓN REACTIVA DE LA VISTA ---
+                            let crnsRecienAsignados = gruposAEnviar.map(g => g.crn);
+                            $scope.registrosBD = $scope.registrosBD.filter(g => !crnsRecienAsignados.includes(g.crn));
+                            $scope.actualizarPaginacion();
+
+                            let crnsUnicosNuevos = new Set(crnsRecienAsignados).size;
+                            let profIndex = $scope.profesoresBD.findIndex(p => p.codigo == $scope.asignacion.codigo_profesor);
+                            if (profIndex > -1) {
+                                $scope.profesoresBD[profIndex].carga_asignada_actual += $scope.calcularCargaSeleccionada();
+                                $scope.profesoresBD[profIndex].grupos_asignados += crnsUnicosNuevos;
+                            }
+
+                            $scope.resultadosBusqueda = [];
+                            $scope.criterioBusqueda.clave = "";
+                            $scope.limpiarBusquedaProfesor();
+
+                        } else if (res.status === 'error_empalme') {
+                            alert("❌ CONFLICTO DE HORARIO DETECTADO:\n\n" + res.message);
+                        } else {
+                            alert("⚠️ Error del servidor: " + res.message);
+                        }
                     })
-                    .catch(function (error) {
-                        console.error("Error al cargar BD_2026B.json:", error);
-                        alert("No se pudo cargar la base de datos local BD_2026B.json. Asegúrate de que el archivo exista en la misma ruta.");
+                    .catch(function(error) {
+                        $scope.guardandoAsignacion = false;
+                        console.error("Error POST detallado:", error);
+                        alert("Error de comunicación con Google Drive. Revisa la consola.");
                     });
             };
 
             $scope.ejecutarBusqueda = function() {
                 let busqueda = $scope.criterioBusqueda.clave.toUpperCase().trim();
-                
-                if (busqueda === "") {
-                    $scope.resultadosBusqueda = [];
-                    return;
-                }
-
+                if (busqueda === "") { $scope.resultadosBusqueda = []; return; }
                 $scope.resultadosBusqueda = $scope.registrosBD.filter(function(registro) {
                     if(!registro.clave) return false;
                     return registro.clave.toUpperCase().includes(busqueda);
                 });
             };
 
-            // Función para seleccionar/deseleccionar todos los registros con el mismo CRN
             $scope.toggleSeleccionCRN = function(crn, estadoActual) {
                 if (!crn) return;
-                
-                // Recorremos los resultados de búsqueda para emparejar el estado del checkbox
                 angular.forEach($scope.resultadosBusqueda, function(registro) {
-                    if (registro.crn === crn) {
-                        registro.seleccionado = estadoActual;
-                    }
+                    if (registro.crn === crn) { registro.seleccionado = estadoActual; }
                 });
             };
 
@@ -313,32 +555,102 @@
                 let dias = [];
                 if(registro.l) dias.push(registro.l);
                 if(registro.m) dias.push(registro.m);
-                if(registro.i) dias.push(registro.i); // i = miércoles
+                if(registro.i) dias.push(registro.i); 
                 if(registro.j) dias.push(registro.j);
                 if(registro.v) dias.push(registro.v);
                 if(registro.s) dias.push(registro.s);
                 return dias.join("") || "N/A";
             };
 
+            $scope.calcularCargaSeleccionada = function() {
+                let cargaTotal = 0;
+                if ($scope.resultadosBusqueda) {
+                    $scope.resultadosBusqueda.forEach(r => {
+                        if (r.seleccionado) { cargaTotal += parseFloat(r.carga_horaria) || 0; }
+                    });
+                }
+                return cargaTotal;
+            };
+
             $scope.contarSeleccionados = function() {
                 if(!$scope.resultadosBusqueda) return 0;
-                return $scope.resultadosBusqueda.filter(r => r.seleccionado).length;
+                let crnsUnicos = new Set();
+                $scope.resultadosBusqueda.forEach(r => {
+                    if(r.seleccionado && r.crn) { crnsUnicos.add(r.crn); }
+                });
+                return crnsUnicos.size;
             };
 
-            // --- LÓGICA DE PAGINACIÓN ---
+            $scope.seleccionarProfesorDesdeLista = function() {
+                if (!$scope.busquedaDocenteAsignacion) return;
+                let val = $scope.busquedaDocenteAsignacion.toUpperCase().trim();
+                let posibleCodigo = val.split(" - ")[0].trim();
+
+                let prof = $scope.profesoresBD.find(p => 
+                    (p.codigo && p.codigo.toString().toUpperCase() === posibleCodigo) || 
+                    (p.codigo && p.codigo.toString().toUpperCase() === val) || 
+                    (p.profesor && p.profesor.toUpperCase() === val)
+                );
+                
+                if (prof) {
+                    $scope.asignacion.codigo_profesor = prof.codigo;
+                    $scope.asignacion.nombre_profesor = prof.profesor;
+                    $scope.asignacion.categoria = prof.categoria || "-";
+                    $scope.asignacion.carga_obligada = $scope.calcularCargaObligada(prof);
+                    $scope.asignacion.carga_asignada_previa = prof.carga_asignada_actual || 0; 
+                }
+            };
+
+            $scope.limpiarBusquedaProfesor = function() {
+                $scope.busquedaDocenteAsignacion = "";
+                $scope.asignacion = { codigo_profesor: "", nombre_profesor: "", categoria: "", carga_obligada: "", carga_asignada_previa: 0 };
+            };
+
+            // ==========================================
+            // UTILIDADES Y PAGINACIÓN
+            // ==========================================
+            $scope.calcularCargaObligada = function(p) {
+                if (!p || !p.tipo_categoria) return "-";
+                let tipo = p.tipo_categoria.toString().trim().toUpperCase();
+                if (tipo === "ASIGNATURA") return p.horas_asignaturas_definitivas || "-";
+                else if (tipo === "PTC") return p["carga_mínima_obligatoria_(ptc)"] || p["carga_minima_obligatoria_(ptc)"] || "-";
+                else if (tipo === "CIVIL") return "-";
+                return "-";
+            };
+
+            $scope.obtenerProgramasUnicos = function() {
+                if (!$scope.registrosBD) return [];
+                return [...new Set($scope.registrosBD.map(r => r.programa_educativo).filter(p => p))].sort();
+            };
+
+            $scope.obtenerDepartamentosUnicos = function() {
+                if (!$scope.registrosBD) return [];
+                return [...new Set($scope.registrosBD.map(r => r.departamento).filter(d => d))].sort();
+            };
+
+            $scope.profesoresFiltrados = function() {
+                let filtrados = $filter('filter')($scope.profesoresBD, $scope.busquedaProfesor);
+                let nuevasPaginas = Math.ceil((filtrados ? filtrados.length : 0) / $scope.profesoresPorPagina) || 1;
+                if ($scope.totalPaginasProf !== nuevasPaginas) {
+                    $scope.totalPaginasProf = nuevasPaginas;
+                    if ($scope.paginaActualProf > $scope.totalPaginasProf) $scope.paginaActualProf = 1;
+                }
+                return filtrados;
+            };
+
             $scope.actualizarPaginacion = function() {
-                $scope.totalPaginas = Math.ceil($scope.registrosBD.length / $scope.registrosPorPagina);
-                if ($scope.totalPaginas === 0) $scope.totalPaginas = 1;
+                $scope.totalPaginas = Math.ceil($scope.registrosBD.length / $scope.registrosPorPagina) || 1;
                 if ($scope.paginaActual > $scope.totalPaginas) $scope.paginaActual = $scope.totalPaginas;
             };
+            $scope.paginaAnterior = function() { if ($scope.paginaActual > 1) $scope.paginaActual--; };
+            $scope.paginaSiguiente = function() { if ($scope.paginaActual < $scope.totalPaginas) $scope.paginaActual++; };
 
-            $scope.paginaAnterior = function() {
-                if ($scope.paginaActual > 1) { $scope.paginaActual--; }
+            $scope.actualizarPaginacionProf = function() {
+                $scope.totalPaginasProf = Math.ceil($scope.profesoresBD.length / $scope.profesoresPorPagina) || 1;
+                if ($scope.paginaActualProf > $scope.totalPaginasProf) $scope.paginaActualProf = $scope.totalPaginasProf;
             };
-
-            $scope.paginaSiguiente = function() {
-                if ($scope.paginaActual < $scope.totalPaginas) { $scope.paginaActual++; }
-            };
+            $scope.paginaAnteriorProf = function() { if ($scope.paginaActualProf > 1) $scope.paginaActualProf--; };
+            $scope.paginaSiguienteProf = function() { if ($scope.paginaActualProf < $scope.totalPaginasProf) $scope.paginaActualProf++; };
 
         });
     </script>
