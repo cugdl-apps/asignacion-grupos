@@ -1,0 +1,212 @@
+{
+  "roles_globales": {
+    "ADMIN": {
+      "permisos": ["VER_TODO", "ASIGNAR_TODO", "DESASIGNAR_TODO", "EXPORTAR_TODO"]
+    },
+    "ESCOLAR": {
+      "permisos": ["VER_TODO", "EXPORTAR_TODO"]
+    },
+    "DIVISION": {
+      "permisos": ["VER_TODO", "ASIGNAR_PROPIO", "DESASIGNAR_PROPIO", "EXPORTAR_PROPIO"]
+    },
+    "DEPTO": {
+      "permisos": ["VER_TODO", "ASIGNAR_PROPIO", "DESASIGNAR_PROPIO", "EXPORTAR_PROPIO"]
+    }
+  },
+  
+  "departamentos_diccionario": {
+    "DEP_1": {
+      "nombre_oficial": "Departamento de Arte, Cultura y Humanidades",
+      "alias_bd": ["DEPTO. DE ARTE, CULTURA Y HUMANIDADES"]
+    },
+    "DEP_2": {
+      "nombre_oficial": "Departamento de Salud, Educación y Bienestar",
+      "alias_bd": ["DEPTO. DE SALUD, EDUCACION Y BIENESTAR"]
+    },
+    "DEP_3": {
+      "nombre_oficial": "Departamento de Seguridad, Diversidad, Paz y Justicia Social",
+      "alias_bd": ["DEPTO. DE SEGURIDAD, DIVERSIDAD, PAZ Y JUSTICIA S"]
+    },
+    "DEP_4": {
+      "nombre_oficial": "Departamento de Crecimiento Económico, Producción y Consumo Responsable",
+      "alias_bd": ["DEPTO. DE CRECIMIENTO ECONOMICO, PRODUCCION Y CONS"]
+    },
+    "DEP_5": {
+      "nombre_oficial": "Departamento de Gestión para la Sostenibilidad",
+      "alias_bd": ["DEPTO. DE GESTION PARA LA SOSTENIBILIDAD"]
+    },
+    "DEP_6": {
+      "nombre_oficial": "Departamento de Innovación en Gestión del Conocimiento",
+      "alias_bd": ["DEPTO. DE INNOVACION EN GESTION DEL CONOCIMIENTO"]
+    },
+    "DEP_7": {
+      "nombre_oficial": "Departamento de Innovación Social",
+      "alias_bd": ["DEPTO. DE INNOVACION SOCIAL"]
+    },
+    "DEP_8": {
+      "nombre_oficial": "Departamento de Innovación Tecnológica",
+      "alias_bd": ["DEPTO. DE INNOVACION TECNOLOGICA"]
+    },
+    "DEP_9": {
+      "nombre_oficial": "Departamento de Energías Renovables y Protección de Ecosistema",
+      "alias_bd": ["DEPTO. DE ENERGIAS RENOVABLES Y DE PROTECCION DE E"]
+    }
+  },
+
+  "usuarios_autorizados": [
+    {
+      "correo": "alberto.castellanos@cugdl.udg.mx",
+      "nombre_completo": "Mtro. José Alberto Castellanos Gutiérrez",
+      "puesto": "Rector de Centro",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "alberto.becerra@cugdl.udg.mx",
+      "nombre_completo": "Dr. José Alberto Becerra Santiago",
+      "puesto": "Secretario Académico",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "raul.gomez@cugdl.udg.mx",
+      "nombre_completo": "Dr. Raúl Vladimir Gómez Díaz",
+      "puesto": "Coordinador de Programas Académicos",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "jonathan.lopez@cugdl.udg.mx",
+      "nombre_completo": "Mtro. Jonathan Jair López González",
+      "puesto": "Desarrollador",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "hiram.angel@cugdl.udg.mx",
+      "nombre_completo": "Dr. Hiram A. Ángel Lara",
+      "puesto": "Coordinador de Posgrados",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "david.flores@cugdl.udg.mx",
+      "nombre_completo": "Mtro. José David Flores Ureña",
+      "puesto": "Secretario Administrativo",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "luis.saldana@cugdl.udg.mx",
+      "nombre_completo": "Mtro. Luis Fernando Saldaña Pérez",
+      "puesto": "Coordinador de Personal",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "control.escolar@cugdl.udg.mx",
+      "nombre_completo": "Mtra. Magaly Elizabeth Gómez Hernández",
+      "puesto": "Coordinadora de Control Escolar",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "tania.hernandez@cugdl.udg.mx",
+      "nombre_completo": "Dra. Tania Marcela Hernández Rodríguez",
+      "puesto": "Director(a) de División",
+      "rol": "DIVISION",
+      "departamentos_acceso": ["DEP_1", "DEP_2", "DEP_3"]
+    },
+    {
+      "correo": "alejandra.bernal@cugdl.udg.mx",
+      "nombre_completo": "Mtra. Alejandra Bernal Venegas",
+      "puesto": "Secretario(a) de División",
+      "rol": "DIVISION",
+      "departamentos_acceso": ["DEP_1", "DEP_2", "DEP_3"]
+    },
+    {
+      "correo": "dpto.cultura.humanidades@cugdl.udg.mx",
+      "nombre_completo": "Mtra. María del Carmen Valenzuela Gómez",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_1"]
+    },
+    {
+      "correo": "dpto.salud.bienestar@cugdl.udg.mx",
+      "nombre_completo": "Dr. Francisco Quiñonez Tapia",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_2"]
+    },
+    {
+      "correo": "diego.escobar@cugdl.udg.mx",
+      "nombre_completo": "Mtro. Diego Escobar González",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_3"]
+    },
+    {
+      "correo": "div.desarrollo.sostenibilidad@cugdl.udg.mx",
+      "nombre_completo": "Mtra. Paola Lyccette Corona Gutiérrez",
+      "puesto": "Director(a) de División",
+      "rol": "DIVISION",
+      "departamentos_acceso": ["DEP_4", "DEP_5","DEP_9"]
+    },
+    {
+      "correo": "raul.gonzalez@cugdl.udg.mx",
+      "nombre_completo": "Mtro. Raúl González Orozco",
+      "puesto": "Secretario(a) de División",
+      "rol": "DIVISION",
+      "departamentos_acceso": ["DEP_4", "DEP_5","DEP_9"]
+    },
+    {
+      "correo": "dpto.crecimiento.economico@cugdl.udg.mx",
+      "nombre_completo": "Dr. Jorge Ignacio Villaseñor Becerra",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_4"]
+    },
+    {
+      "correo": "dpto.gestion.sostenibilidad@cugdl.udg.mx",
+      "nombre_completo": "Dra. Irma Janett Sepúlveda Ríos",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_5"]
+    },
+    {
+      "correo": "victor.larios@cugdl.udg.mx",
+      "nombre_completo": "Dr. Víctor Manuel Larios Rosillo",
+      "puesto": "Director(a) de División",
+      "rol": "DIVISION",
+      "departamentos_acceso": ["DEP_6", "DEP_7", "DEP_8"]
+    },
+    {
+      "correo": "claudia.lie@cugdl.udg.mx",
+      "nombre_completo": "Mtra. Claudia Ivette Lie Neri",
+      "puesto": "Secretario(a) de División",
+      "rol": "DIVISION",
+      "departamentos_acceso": ["DEP_6", "DEP_7", "DEP_8"]
+    },
+    {
+      "correo": "dpto.innovacion.conocimiento@cugdl.udg.mx",
+      "nombre_completo": "Dr. Jesús Raúl Beltrán Ramírez",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_6"]
+    },
+    {
+      "correo": "dpto.innovacion.social@cugdl.udg.mx",
+      "nombre_completo": "Dra. Ana Marcela Torres Villanueva",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_7"]
+    },
+    {
+      "correo": "dpto.innovacion.tecnologica@cugdl.udg.mx",
+      "nombre_completo": "Dra. María de la Paz Arroyo Arciniega",
+      "puesto": "Jefe(a) de Departamento",
+      "rol": "DEPTO",
+      "departamentos_acceso": ["DEP_8"]
+    }
+  ]
+}
