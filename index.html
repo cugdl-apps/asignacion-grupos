@@ -3,39 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo de Asignación y Gestión</title>
+    <title>Módulo de Asignación y Gestión - Versión de Oro CUGDL</title>
     
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-    
     <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak { 
-            display: none !important; 
-        }
-        .loader { 
-            border: 4px solid #f3f3f3; 
-            border-top: 4px solid #3b82f6; 
-            border-radius: 50%; 
-            width: 30px; 
-            height: 30px; 
-            animation: spin 1s linear infinite; 
-        }
-        @keyframes spin { 
-            0% { transform: rotate(0deg); } 
-            100% { transform: rotate(360deg); } 
-        }
-        .jurisdiccion-aviso { 
-            font-size: 0.7rem; 
-            font-weight: bold; 
-            color: #ef4444; 
-        }
+        [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak { display: none !important; }
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid #3b82f6; border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 
@@ -43,20 +25,14 @@
 
     <div ng-show="!usuarioAutenticado" class="min-h-screen flex items-center justify-center bg-gray-200">
         <div class="bg-white p-10 rounded-lg shadow-xl text-center max-w-md w-full">
-            
             <div class="flex justify-center gap-4 mb-6">
                 <img src="UDG.png" class="h-16" alt="UDG" onerror="this.style.display='none'">
                 <img src="CUGDL.png" class="h-16" alt="CUGDL" onerror="this.style.display='none'">
             </div>
-            
             <h2 class="text-2xl font-bold text-gray-800 mb-2">Acceso Restringido</h2>
             <p class="text-gray-600 mb-8">Inicia sesión con tu correo institucional para verificar tus permisos.</p>
-            
             <div id="googleButtonDiv" class="flex justify-center"></div>
-            
-            <div ng-if="errorLogin" class="mt-4 p-4 bg-red-100 text-red-800 rounded border border-red-300 text-sm font-semibold text-center shadow-inner">
-                {{errorLogin}}
-            </div>
+            <div ng-if="errorLogin" class="mt-4 p-4 bg-red-100 text-red-800 rounded border border-red-300 text-sm font-semibold shadow-inner">{{errorLogin}}</div>
         </div>
     </div>
 
@@ -71,7 +47,6 @@
                         <p class="text-gray-600">Centro Universitario de Guadalajara</p>
                     </div>
                 </div>
-                
                 <div class="text-right bg-blue-50 p-3 rounded border border-blue-200 shadow-sm hidden md:block">
                     <p class="font-bold text-blue-900 uppercase text-sm">{{perfil.nombre_completo}}</p>
                     <p class="text-blue-700 font-semibold text-xs">{{perfil.puesto}}</p>
@@ -90,31 +65,11 @@
         <div class="max-w-7xl mx-auto px-4 space-y-6" ng-show="!cargandoDatos">
 
             <div class="flex space-x-2 border-b-2 border-gray-200 pb-2 overflow-x-auto">
-                <button ng-click="cambiarVista('grupos')" 
-                        ng-class="vistaPrincipal == 'grupos' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
-                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">
-                    Asignación Docente
-                </button>
-                <button ng-click="cambiarVista('profesores')" 
-                        ng-class="vistaPrincipal == 'profesores' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
-                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">
-                    Catálogo Profesores
-                </button>
-                <button ng-click="cambiarVista('aulas')" 
-                        ng-class="vistaPrincipal == 'aulas' ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
-                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">
-                    Asignación de Aulas y Espacios
-                </button>
-                <button ng-click="cambiarVista('mis_asignaciones')" 
-                        ng-class="vistaPrincipal == 'mis_asignaciones' ? 'bg-green-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
-                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">
-                    Gestión de Asignaciones
-                </button>
-                <button ng-click="cambiarVista('estadisticas')" 
-                        ng-class="vistaPrincipal == 'estadisticas' ? 'bg-yellow-500 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" 
-                        class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">
-                    Estadísticas
-                </button>
+                <button ng-click="cambiarVista('grupos')" ng-class="vistaPrincipal == 'grupos' ? 'bg-blue-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">Asignación Docente</button>
+                <button ng-click="cambiarVista('profesores')" ng-class="vistaPrincipal == 'profesores' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">Catálogo Profesores</button>
+                <button ng-click="cambiarVista('aulas')" ng-class="vistaPrincipal == 'aulas' ? 'bg-orange-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">Asignación de Aulas y Espacios</button>
+                <button ng-click="cambiarVista('mis_asignaciones')" ng-class="vistaPrincipal == 'mis_asignaciones' ? 'bg-green-600 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">Gestión de Asignaciones</button>
+                <button ng-click="cambiarVista('estadisticas')" ng-class="vistaPrincipal == 'estadisticas' ? 'bg-yellow-500 text-white shadow-md' : 'bg-white text-gray-600 border hover:bg-gray-50'" class="px-5 py-2 rounded-t-lg font-semibold transition-colors whitespace-nowrap">Estadísticas</button>
             </div>
 
             <div ng-show="vistaPrincipal == 'grupos'" class="space-y-6">
@@ -125,11 +80,7 @@
                     <div class="mb-6 flex gap-4 items-end">
                         <div class="flex-1 max-w-md">
                             <label class="font-semibold text-gray-600 block mb-2">Buscar por Clave o Nombre de Materia:</label>
-                            <input type="text" 
-                                   ng-model="criterioBusqueda.clave" 
-                                   ng-change="ejecutarBusqueda()" 
-                                   class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase" 
-                                   placeholder="Ej. V2211 o ALGEBRA">
+                            <input type="text" ng-model="criterioBusqueda.clave" ng-change="ejecutarBusqueda()" class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase" placeholder="Ej. V2211 o ALGEBRA">
                         </div>
                     </div>
                     
@@ -154,9 +105,7 @@
                             </thead>
                             <tbody>
                                 <tr ng-repeat="r in resultadosBusqueda" class="border-t hover:bg-blue-50 transition-colors" ng-class="{'bg-blue-100': r.seleccionado}">
-                                    <td class="px-3 py-2 text-center">
-                                        <input type="checkbox" ng-model="r.seleccionado" ng-change="toggleSeleccionCRN(r.crn, r.seleccionado)" class="w-4 h-4 text-blue-600 rounded">
-                                    </td>
+                                    <td class="px-3 py-2 text-center"><input type="checkbox" ng-model="r.seleccionado" ng-change="toggleSeleccionCRN(r.crn, r.seleccionado)" class="w-4 h-4 text-blue-600 rounded"></td>
                                     <td class="px-3 py-2 font-mono">{{r.crn}}</td>
                                     <td class="px-3 py-2 font-bold">{{r.clave}}</td>
                                     <td class="px-3 py-2">{{r.materia}}</td>
@@ -164,19 +113,13 @@
                                     <td class="px-3 py-2 text-center">{{r.programa_educativo}}</td>
                                     <td class="px-3 py-2 text-center">{{r.carga_horaria}}</td>
                                     <td class="px-3 py-2">{{formatearDias(r)}}</td>
-                                    <td class="px-3 py-2 whitespace-nowrap">{{r.hora_inicio}} - {{r.hora_fin}}</td>
+                                    <td class="px-3 py-2 whitespace-nowrap">{{formatHoraLimpia(r.hora_inicio)}} - {{formatHoraLimpia(r.hora_fin)}}</td>
                                     <td class="px-3 py-2 text-xs">
-                                        <span ng-class="{'text-red-600 font-bold': !usuarioTieneJurisdiccion(r)}">
-                                            {{r.departamento}}
-                                        </span>
-                                        <div ng-if="!usuarioTieneJurisdiccion(r)" class="text-[10px] font-bold text-red-500 mt-1 bg-red-50 inline-block px-1 rounded border border-red-200">
-                                            FUERA DE JURISDICCIÓN
-                                        </div>
+                                        <span ng-class="{'text-red-600 font-bold': !usuarioTieneJurisdiccion(r)}">{{r.departamento}}</span>
+                                        <div ng-if="!usuarioTieneJurisdiccion(r)" class="text-[10px] font-bold text-red-500 mt-1 bg-red-50 inline-block px-1 rounded border border-red-200">FUERA DE JURISDICCIÓN</div>
                                     </td>
                                 </tr>
-                                <tr ng-if="resultadosBusqueda.length === 0">
-                                    <td colspan="10" class="px-3 py-6 text-center text-gray-500">No se encontraron grupos DISPONIBLES con esa búsqueda.</td>
-                                </tr>
+                                <tr ng-if="resultadosBusqueda.length === 0"><td colspan="10" class="px-3 py-6 text-center text-gray-500">No se encontraron grupos DISPONIBLES con esa búsqueda.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -186,65 +129,30 @@
                     <h2 class="text-lg font-bold text-gray-700 border-b pb-2 mb-4">Detalle de Asignación Docente</h2>
                     
                     <div class="flex space-x-2 border-b-2 border-gray-100 mb-6">
-                        <button ng-click="tabAsignacionDocente = 'activos'" 
-                                ng-class="tabAsignacionDocente == 'activos' ? 'bg-green-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" 
-                                class="px-5 py-2 rounded-t-lg transition-colors text-sm">
-                            ✓ Activos / Asignar
-                        </button>
-                        <button ng-click="tabAsignacionDocente = 'homologacion'" 
-                                ng-class="tabAsignacionDocente == 'homologacion' ? 'bg-blue-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" 
-                                class="px-5 py-2 rounded-t-lg transition-colors text-sm">
-                            ⏱ Homologación
-                        </button>
-                        <button ng-click="tabAsignacionDocente = 'captura'" 
-                                ng-class="tabAsignacionDocente == 'captura' ? 'bg-purple-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" 
-                                class="px-5 py-2 rounded-t-lg transition-colors text-sm">
-                            ✏️ Captura Manual
-                        </button>
+                        <button ng-click="tabAsignacionDocente = 'activos'" ng-class="tabAsignacionDocente == 'activos' ? 'bg-green-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" class="px-5 py-2 rounded-t-lg transition-colors text-sm">✓ Activos / Asignar</button>
+                        <button ng-click="tabAsignacionDocente = 'homologacion'" ng-class="tabAsignacionDocente == 'homologacion' ? 'bg-blue-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" class="px-5 py-2 rounded-t-lg transition-colors text-sm">⏱ Homologación</button>
+                        <button ng-click="tabAsignacionDocente = 'captura'" ng-class="tabAsignacionDocente == 'captura' ? 'bg-purple-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" class="px-5 py-2 rounded-t-lg transition-colors text-sm">✏️ Captura Manual</button>
                     </div>
 
                     <div ng-show="tabAsignacionDocente == 'activos'">
                         <div class="mb-6 bg-green-50 p-4 rounded-lg border border-green-200 flex flex-col md:flex-row gap-4 items-end">
                             <div class="flex-1 w-full">
                                 <label class="font-semibold text-green-800 text-sm block mb-1">Buscar y Seleccionar Profesor(a):</label>
-                                <input type="text" 
-                                       ng-model="busquedaDocenteAsignacion" 
-                                       list="listaProfesoresAsignacion" 
-                                       ng-change="seleccionarProfesorDesdeLista()" 
-                                       class="w-full border border-green-300 rounded p-2 focus:ring-2 focus:ring-green-600 bg-white shadow-inner uppercase" 
-                                       placeholder="Escribe código o nombre...">
-                                <datalist id="listaProfesoresAsignacion">
-                                    <option ng-repeat="p in profesoresBD" value="{{p.codigo}} - {{p.profesor}}"></option>
-                                </datalist>
+                                <input type="text" ng-model="busquedaDocenteAsignacion" list="listaProfesoresAsignacion" ng-change="seleccionarProfesorDesdeLista()" class="w-full border border-green-300 rounded p-2 focus:ring-2 focus:ring-green-600 bg-white shadow-inner uppercase" placeholder="Escribe código o nombre...">
+                                <datalist id="listaProfesoresAsignacion"><option ng-repeat="p in profesoresBD" value="{{p.codigo}} - {{p.profesor}}"></option></datalist>
                             </div>
-                            <button ng-click="limpiarBusquedaProfesor()" 
-                                    class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded shadow whitespace-nowrap transition-colors">
-                                Limpiar Búsqueda
-                            </button>
+                            <button ng-click="limpiarBusquedaProfesor()" class="bg-gray-500 hover:bg-gray-600 text-white font-bold py-2 px-6 rounded shadow whitespace-nowrap transition-colors">Limpiar Búsqueda</button>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                            <div>
-                                <label class="font-semibold text-gray-600 text-sm">Código</label>
-                                <input type="text" ng-model="asignacion.codigo_profesor" readonly class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-700 focus:outline-none">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="font-semibold text-gray-600 text-sm">Nombre del Profesor(a)</label>
-                                <input type="text" ng-model="asignacion.nombre_profesor" readonly class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-700 focus:outline-none">
-                            </div>
-                            <div>
-                                <label class="font-semibold text-gray-600 text-sm">Categoría</label>
-                                <input type="text" ng-model="asignacion.categoria" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 focus:outline-none text-xs">
-                            </div>
-                            <div>
-                                <label class="font-semibold text-gray-600 text-sm">Depto. Adscripción</label>
-                                <input type="text" ng-model="asignacion.departamento_adscripcion" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 focus:outline-none text-xs truncate" title="{{asignacion.departamento_adscripcion}}">
-                            </div>
+                            <div><label class="font-semibold text-gray-600 text-sm">Código</label><input type="text" ng-model="asignacion.codigo_profesor" readonly class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-700 focus:outline-none"></div>
+                            <div class="md:col-span-2"><label class="font-semibold text-gray-600 text-sm">Nombre del Profesor(a)</label><input type="text" ng-model="asignacion.nombre_profesor" readonly class="w-full border rounded p-2 bg-gray-100 font-bold text-gray-700 focus:outline-none"></div>
+                            <div><label class="font-semibold text-gray-600 text-sm">Categoría</label><input type="text" ng-model="asignacion.categoria" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 focus:outline-none text-xs"></div>
+                            <div><label class="font-semibold text-gray-600 text-sm">Depto. Adscripción</label><input type="text" ng-model="asignacion.departamento_adscripcion" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 focus:outline-none text-xs truncate" title="{{asignacion.departamento_adscripcion}}"></div>
                             
                             <div class="bg-yellow-50 p-2 rounded border border-yellow-300 shadow-sm">
                                 <label class="font-bold text-yellow-800 text-sm">Tipo Asignación <span class="text-red-500">*</span></label>
-                                <select ng-model="asignacion.tipo_asignacion" 
-                                        class="w-full border border-yellow-400 rounded p-1 mt-1 bg-white text-gray-800 focus:ring-2 focus:ring-yellow-600 focus:outline-none text-sm font-semibold">
+                                <select ng-model="asignacion.tipo_asignacion" class="w-full border border-yellow-400 rounded p-1 mt-1 bg-white text-gray-800 focus:ring-2 focus:ring-yellow-600 focus:outline-none text-sm font-semibold">
                                     <option value="">-- Seleccione --</option>
                                     <option value="TITULAR">TITULAR</option>
                                     <option value="INTERINO">INTERINO</option>
@@ -252,31 +160,19 @@
                                 </select>
                             </div>
 
-                            <div>
-                                <label class="font-semibold text-gray-600 text-sm">Carga Obligada</label>
-                                <input type="text" ng-model="asignacion.carga_obligada" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 text-center font-semibold focus:outline-none">
-                            </div>
+                            <div><label class="font-semibold text-gray-600 text-sm">Carga Obligada</label><input type="text" ng-model="asignacion.carga_obligada" readonly class="w-full border rounded p-2 bg-gray-100 text-gray-700 text-center font-semibold focus:outline-none"></div>
                             
                             <div class="md:col-span-5 flex flex-col justify-center">
                                 <label class="font-semibold text-gray-600 text-sm">Carga Asignada Actual (Registrada en servidor)</label>
                                 <div class="flex items-center space-x-2">
                                     <input type="text" ng-model="asignacion.carga_asignada_previa" readonly class="w-24 border rounded p-2 bg-gray-100 font-bold text-indigo-700 text-center shadow-inner focus:outline-none">
-                                    <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded border border-blue-200" ng-show="calcularCargaSeleccionada() > 0">
-                                        (+ {{calcularCargaSeleccionada()}} hrs por asignar)
-                                    </span>
+                                    <span class="text-xs text-blue-600 font-semibold bg-blue-50 px-2 py-1 rounded border border-blue-200" ng-show="calcularCargaSeleccionada() > 0">(+ {{calcularCargaSeleccionada()}} hrs por asignar)</span>
                                 </div>
                             </div>
 
                             <div class="md:col-span-6 mt-2 flex flex-col md:flex-row justify-between items-center bg-gray-50 p-4 border rounded gap-4 shadow-sm">
-                                <div>
-                                    <span class="text-sm text-gray-600">Grupos seleccionados para asignar:</span>
-                                    <span class="font-bold text-xl text-blue-600 ml-2">{{contarSeleccionados()}}</span>
-                                </div>
-                                
-                                <button ng-click="vincularProfesor()" 
-                                        class="font-bold py-3 px-8 rounded-lg shadow transition-all flex items-center justify-center gap-2"
-                                        ng-class="!puedeGuardarAsignacion() ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'"
-                                        ng-disabled="!puedeGuardarAsignacion() || guardandoAsignacion">
+                                <div><span class="text-sm text-gray-600">Grupos seleccionados para asignar:</span><span class="font-bold text-xl text-blue-600 ml-2">{{contarSeleccionados()}}</span></div>
+                                <button ng-click="vincularProfesor()" class="font-bold py-3 px-8 rounded-lg shadow transition-all flex items-center justify-center gap-2" ng-class="!puedeGuardarAsignacion() ? 'bg-gray-400 text-gray-200 cursor-not-allowed' : 'bg-green-600 hover:bg-green-700 text-white'" ng-disabled="!puedeGuardarAsignacion() || guardandoAsignacion">
                                     <div ng-show="guardandoAsignacion" class="loader" style="width: 20px; height: 20px; border-width: 3px; border-top-color: white;"></div>
                                     <span>{{ getTextoBotonGuardar() }}</span>
                                 </button>
@@ -289,29 +185,12 @@
                         <p class="text-sm text-blue-700 mb-4">Registra a un profesor sin código oficial. El sistema le asignará un código temporal (100000X).</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-                            <div>
-                                <label class="font-semibold text-blue-900 text-sm">Nombre (s) <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formHomologacion.nombre" ng-change="limpiarTexto(formHomologacion, 'nombre')" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 uppercase">
-                            </div>
-                            <div>
-                                <label class="font-semibold text-blue-900 text-sm">Apellido Paterno <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formHomologacion.paterno" ng-change="limpiarTexto(formHomologacion, 'paterno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 uppercase">
-                            </div>
-                            <div>
-                                <label class="font-semibold text-blue-900 text-sm">Apellido Materno <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formHomologacion.materno" ng-change="limpiarTexto(formHomologacion, 'materno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 uppercase">
-                            </div>
-                            <div>
-                                <label class="font-semibold text-blue-900 text-sm">Grado Académico <span class="text-red-500">*</span></label>
-                                <select ng-model="formHomologacion.grado_academico" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 bg-white">
-                                    <option value="">Seleccione...</option>
-                                    <option ng-repeat="g in listaGradosAcademicos" value="{{g}}">{{g}}</option>
-                                </select>
-                            </div>
+                            <div><label class="font-semibold text-blue-900 text-sm">Nombre (s) <span class="text-red-500">*</span></label><input type="text" ng-model="formHomologacion.nombre" ng-change="limpiarTexto(formHomologacion, 'nombre')" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 uppercase"></div>
+                            <div><label class="font-semibold text-blue-900 text-sm">Apellido Paterno <span class="text-red-500">*</span></label><input type="text" ng-model="formHomologacion.paterno" ng-change="limpiarTexto(formHomologacion, 'paterno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 uppercase"></div>
+                            <div><label class="font-semibold text-blue-900 text-sm">Apellido Materno <span class="text-red-500">*</span></label><input type="text" ng-model="formHomologacion.materno" ng-change="limpiarTexto(formHomologacion, 'materno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 uppercase"></div>
+                            <div><label class="font-semibold text-blue-900 text-sm">Grado Académico <span class="text-red-500">*</span></label><select ng-model="formHomologacion.grado_academico" class="w-full border rounded p-2 focus:ring-2 focus:ring-blue-500 bg-white"><option value="">Seleccione...</option><option ng-repeat="g in listaGradosAcademicos" value="{{g}}">{{g}}</option></select></div>
                             <div class="md:col-span-4 text-right mt-4">
-                                <button ng-click="registrarProfesorManual('HOMOLOGACION')" 
-                                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded shadow flex items-center justify-center gap-2 ml-auto transition-colors" 
-                                        ng-disabled="guardandoNuevoProf">
+                                <button ng-click="registrarProfesorManual('HOMOLOGACION')" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-8 rounded shadow flex items-center justify-center gap-2 ml-auto transition-colors" ng-disabled="guardandoNuevoProf">
                                     <div ng-show="guardandoNuevoProf" class="loader" style="width: 15px; height: 15px; border-width: 2px;"></div>
                                     <span>Registrar y Generar Código Temporal</span>
                                 </button>
@@ -324,42 +203,14 @@
                         <p class="text-sm text-purple-700 mb-4">Registra a un profesor que ya cuenta con nombramiento y código oficial, pero no aparece en el catálogo.</p>
                         
                         <div class="grid grid-cols-1 md:grid-cols-6 gap-4">
-                            <div>
-                                <label class="font-semibold text-purple-900 text-sm">Código UDG <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formCaptura.codigo" ng-change="limpiarCodigo()" maxlength="7" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="font-semibold text-purple-900 text-sm">Nombre (s) <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formCaptura.nombre" ng-change="limpiarTexto(formCaptura, 'nombre')" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 uppercase">
-                            </div>
-                            <div class="md:col-span-2">
-                                <label class="font-semibold text-purple-900 text-sm">Apellido Paterno <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formCaptura.paterno" ng-change="limpiarTexto(formCaptura, 'paterno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 uppercase">
-                            </div>
-                            <div>
-                                <label class="font-semibold text-purple-900 text-sm">Apellido Materno <span class="text-red-500">*</span></label>
-                                <input type="text" ng-model="formCaptura.materno" ng-change="limpiarTexto(formCaptura, 'materno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 uppercase">
-                            </div>
-                            
-                            <div class="md:col-span-3">
-                                <label class="font-semibold text-purple-900 text-sm">Grado Académico <span class="text-red-500">*</span></label>
-                                <select ng-model="formCaptura.grado_academico" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 bg-white">
-                                    <option value="">Seleccione...</option>
-                                    <option ng-repeat="g in listaGradosAcademicos" value="{{g}}">{{g}}</option>
-                                </select>
-                            </div>
-                            <div class="md:col-span-3">
-                                <label class="font-semibold text-purple-900 text-sm">Categoría Oficial <span class="text-red-500">*</span></label>
-                                <select ng-model="formCaptura.categoria" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 bg-white">
-                                    <option value="">Seleccione...</option>
-                                    <option ng-repeat="c in listaCategoriasOficiales" value="{{c}}">{{c}}</option>
-                                </select>
-                            </div>
-
+                            <div><label class="font-semibold text-purple-900 text-sm">Código UDG <span class="text-red-500">*</span></label><input type="text" ng-model="formCaptura.codigo" ng-change="limpiarCodigo()" maxlength="7" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500"></div>
+                            <div class="md:col-span-2"><label class="font-semibold text-purple-900 text-sm">Nombre (s) <span class="text-red-500">*</span></label><input type="text" ng-model="formCaptura.nombre" ng-change="limpiarTexto(formCaptura, 'nombre')" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 uppercase"></div>
+                            <div class="md:col-span-2"><label class="font-semibold text-purple-900 text-sm">Apellido Paterno <span class="text-red-500">*</span></label><input type="text" ng-model="formCaptura.paterno" ng-change="limpiarTexto(formCaptura, 'paterno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 uppercase"></div>
+                            <div><label class="font-semibold text-purple-900 text-sm">Apellido Materno <span class="text-red-500">*</span></label><input type="text" ng-model="formCaptura.materno" ng-change="limpiarTexto(formCaptura, 'materno')" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 uppercase"></div>
+                            <div class="md:col-span-3"><label class="font-semibold text-purple-900 text-sm">Grado Académico <span class="text-red-500">*</span></label><select ng-model="formCaptura.grado_academico" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 bg-white"><option value="">Seleccione...</option><option ng-repeat="g in listaGradosAcademicos" value="{{g}}">{{g}}</option></select></div>
+                            <div class="md:col-span-3"><label class="font-semibold text-purple-900 text-sm">Categoría Oficial <span class="text-red-500">*</span></label><select ng-model="formCaptura.categoria" class="w-full border rounded p-2 focus:ring-2 focus:ring-purple-500 bg-white"><option value="">Seleccione...</option><option ng-repeat="c in listaCategoriasOficiales" value="{{c}}">{{c}}</option></select></div>
                             <div class="md:col-span-6 text-right mt-4">
-                                <button ng-click="registrarProfesorManual('CAPTURA_MANUAL')" 
-                                        class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-8 rounded shadow flex items-center justify-center gap-2 ml-auto transition-colors" 
-                                        ng-disabled="guardandoNuevoProf">
+                                <button ng-click="registrarProfesorManual('CAPTURA_MANUAL')" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-8 rounded shadow flex items-center justify-center gap-2 ml-auto transition-colors" ng-disabled="guardandoNuevoProf">
                                     <div ng-show="guardandoNuevoProf" class="loader" style="width: 15px; height: 15px; border-width: 2px;"></div>
                                     <span>Validar y Registrar Profesor</span>
                                 </button>
@@ -371,27 +222,12 @@
                 <section class="bg-white p-6 rounded-lg shadow">
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
                         <h2 class="text-lg font-bold text-gray-700">Catálogo de Grupos (Estado Global)</h2>
-                        <button ng-click="exportarExcelGrupos()" 
-                                class="bg-green-100 text-green-800 hover:bg-green-200 font-bold py-1 px-4 rounded border border-green-300 text-sm shadow-sm flex items-center gap-2 transition-colors">
-                            <span>📥 Exportar a Excel</span>
-                        </button>
+                        <button ng-click="exportarExcelGrupos()" class="bg-green-100 text-green-800 hover:bg-green-200 font-bold py-1 px-4 rounded border border-green-300 text-sm shadow-sm flex items-center gap-2 transition-colors"><span>📥 Exportar a Excel</span></button>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4 mb-4 bg-gray-50 p-3 rounded border">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-600">Filtrar por Programa Educativo:</label>
-                            <select ng-model="filtroGeneral.programa_educativo" class="w-full border rounded p-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                <option value="">Todos</option>
-                                <option ng-repeat="prog in obtenerProgramasUnicos()" value="{{prog}}">{{prog}}</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-gray-600">Filtrar por Departamento Materia:</label>
-                            <select ng-model="filtroGeneral.departamento" class="w-full border rounded p-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none">
-                                <option value="">Todos</option>
-                                <option ng-repeat="dep in obtenerDepartamentosUnicos()" value="{{dep}}">{{dep}}</option>
-                            </select>
-                        </div>
+                        <div class="flex-1"><label class="text-xs font-semibold text-gray-600">Filtrar por Programa Educativo:</label><select ng-model="filtroGeneral.programa_educativo" class="w-full border rounded p-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"><option value="">Todos</option><option ng-repeat="prog in obtenerProgramasUnicos()" value="{{prog}}">{{prog}}</option></select></div>
+                        <div class="flex-1"><label class="text-xs font-semibold text-gray-600">Filtrar por Departamento Materia:</label><select ng-model="filtroGeneral.departamento" class="w-full border rounded p-1 text-sm focus:ring-2 focus:ring-blue-400 focus:outline-none"><option value="">Todos</option><option ng-repeat="dep in obtenerDepartamentosUnicos()" value="{{dep}}">{{dep}}</option></select></div>
                     </div>
                     
                     <div class="overflow-x-auto">
@@ -409,8 +245,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="r in (gruposFiltradosArray = (registrosBD | filter:filtroGeneral)) | limitTo: registrosPorPagina : (paginaActual - 1) * registrosPorPagina" 
-                                    class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
+                                <tr ng-repeat="r in (gruposFiltradosArray = (registrosBD | filter:filtroGeneral)) | limitTo: registrosPorPagina : (paginaActual - 1) * registrosPorPagina" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
                                     <td class="px-3 py-2 text-gray-500">{{r.id}}</td>
                                     <td class="px-3 py-2 text-center">{{r.semestre}}</td>
                                     <td class="px-3 py-2 font-mono text-xs">{{r.crn}}</td>
@@ -420,29 +255,15 @@
                                     <td class="px-3 py-2 text-center font-semibold">{{r.carga_horaria}}</td>
                                     <td class="px-3 py-2 text-xs text-gray-600">{{r.departamento}}</td>
                                 </tr>
-                                <tr ng-if="gruposFiltradosArray.length === 0">
-                                    <td colspan="8" class="px-3 py-6 text-center text-gray-500 italic">No hay grupos disponibles.</td>
-                                </tr>
+                                <tr ng-if="gruposFiltradosArray.length === 0"><td colspan="8" class="px-3 py-6 text-center text-gray-500 italic">No hay grupos disponibles.</td></tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="gruposFiltradosArray.length > 0">
-                        <button ng-click="paginaAnterior()" 
-                                ng-disabled="paginaActual == 1" 
-                                class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">
-                            &laquo; Anterior
-                        </button>
-                        
-                        <span class="font-semibold text-gray-600 text-sm">
-                            Página {{paginaActual}} de {{ getPaginasGrupos(gruposFiltradosArray) }}
-                        </span>
-                        
-                        <button ng-click="paginaSiguiente(gruposFiltradosArray)" 
-                                ng-disabled="paginaActual >= getPaginasGrupos(gruposFiltradosArray)" 
-                                class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">
-                            Siguiente &raquo;
-                        </button>
+                        <button ng-click="paginaAnterior()" ng-disabled="paginaActual == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">&laquo; Anterior</button>
+                        <span class="font-semibold text-gray-600 text-sm">Página {{paginaActual}} de {{ getPaginasGrupos(gruposFiltradosArray) }}</span>
+                        <button ng-click="paginaSiguiente(gruposFiltradosArray)" ng-disabled="paginaActual >= getPaginasGrupos(gruposFiltradosArray)" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">Siguiente &raquo;</button>
                     </div>
                 </section>
             </div>
@@ -452,28 +273,14 @@
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
                         <h2 class="text-lg font-bold text-gray-700">Catálogo de Profesores (2026B) y Cargas Históricas</h2>
                         <div class="flex items-center gap-4">
-                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full border border-indigo-200">
-                                Total: {{profesoresBD.length}} docentes
-                            </span>
-                            <button ng-click="exportarExcelProfesores()" 
-                                    class="bg-green-100 text-green-800 hover:bg-green-200 font-bold py-1 px-4 rounded border border-green-300 text-sm shadow-sm flex items-center gap-2">
-                                <span>📥 Exportar a Excel</span>
-                            </button>
+                            <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-3 py-1 rounded-full border border-indigo-200">Total: {{profesoresBD.length}} docentes</span>
+                            <button ng-click="exportarExcelProfesores()" class="bg-green-100 text-green-800 hover:bg-green-200 font-bold py-1 px-4 rounded border border-green-300 text-sm shadow-sm flex items-center gap-2"><span>📥 Exportar a Excel</span></button>
                         </div>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4 mb-4 bg-indigo-50 p-3 rounded border border-indigo-100">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-indigo-800">Filtrar por Departamento de Adscripción:</label>
-                            <select ng-model="filtroProfesor.departamento_adscripcion" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none">
-                                <option value="">Todos</option>
-                                <option ng-repeat="dep in obtenerDeptosProfesores()" value="{{dep}}">{{dep}}</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-indigo-800">Búsqueda por Nombre o Código:</label>
-                            <input type="text" ng-model="busquedaProfesorTexto" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="Buscar...">
-                        </div>
+                        <div class="flex-1"><label class="text-xs font-semibold text-indigo-800">Filtrar por Departamento de Adscripción:</label><select ng-model="filtroProfesor.departamento_adscripcion" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none"><option value="">Todos</option><option ng-repeat="dep in obtenerDeptosProfesores()" value="{{dep}}">{{dep}}</option></select></div>
+                        <div class="flex-1"><label class="text-xs font-semibold text-indigo-800">Búsqueda por Nombre o Código:</label><input type="text" ng-model="busquedaProfesorTexto" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-indigo-400 focus:outline-none" placeholder="Buscar..."></div>
                     </div>
                     
                     <div class="overflow-x-auto">
@@ -497,75 +304,35 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr ng-repeat="p in (profesoresFiltradosArray = (profesoresBD | filter:filtroProfesor | filter:busquedaProfesorTexto)) | limitTo: profesoresPorPagina : (paginaActualProf - 1) * profesoresPorPagina" 
-                                    class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
-                                    
-                                    <td class="px-3 py-2 font-mono text-gray-600 font-bold" ng-class="{'text-blue-600': p.origen === 'HOMOLOGACION' || p.origen === 'CAPTURA_MANUAL'}">
-                                        {{p.codigo || "-"}}
-                                    </td>
-                                    <td class="px-3 py-2 font-bold text-gray-800">
-                                        {{p.profesor || "-"}}
-                                    </td>
+                                <tr ng-repeat="p in (profesoresFiltradosArray = (profesoresBD | filter:filtroProfesor | filter:busquedaProfesorTexto)) | limitTo: profesoresPorPagina : (paginaActualProf - 1) * profesoresPorPagina" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
+                                    <td class="px-3 py-2 font-mono text-gray-600 font-bold" ng-class="{'text-blue-600': p.origen === 'HOMOLOGACION' || p.origen === 'CAPTURA_MANUAL'}">{{p.codigo || "-"}}</td>
+                                    <td class="px-3 py-2 font-bold text-gray-800">{{p.profesor || "-"}}</td>
                                     <td class="px-3 py-2 text-center text-[10px] font-bold">
                                         <span ng-if="p.origen === 'CATALOGO'" class="bg-gray-200 text-gray-700 px-1 rounded">OFICIAL</span>
                                         <span ng-if="p.origen === 'HOMOLOGACION'" class="bg-blue-100 text-blue-700 px-1 rounded border border-blue-300">HOMOLOG.</span>
                                         <span ng-if="p.origen === 'CAPTURA_MANUAL'" class="bg-purple-100 text-purple-700 px-1 rounded border border-purple-300">MANUAL</span>
                                     </td>
-                                    <td class="px-3 py-2 text-xs">
-                                        {{p.categoria || "-"}}
-                                    </td>
-                                    <td class="px-3 py-2 text-center font-bold text-blue-700 bg-blue-50 border-r border-l border-blue-100">
-                                        {{p.anios_antiguedad}}
-                                    </td>
-                                    <td class="px-3 py-2 text-center font-bold text-indigo-600">
-                                        {{calcularCargaObligada(p)}}
-                                    </td>
+                                    <td class="px-3 py-2 text-xs">{{p.categoria || "-"}}</td>
+                                    <td class="px-3 py-2 text-center font-bold text-blue-700 bg-blue-50 border-r border-l border-blue-100">{{p.anios_antiguedad}}</td>
+                                    <td class="px-3 py-2 text-center font-bold text-indigo-600">{{calcularCargaObligada(p)}}</td>
                                     <td class="px-3 py-2 text-center text-gray-500">{{p.hist_2024b}}</td>
                                     <td class="px-3 py-2 text-center text-gray-500">{{p.hist_2025a}}</td>
                                     <td class="px-3 py-2 text-center text-gray-500">{{p.hist_2025b}}</td>
                                     <td class="px-3 py-2 text-center text-gray-500">{{p.hist_2026a}}</td>
-                                    
-                                    <td class="px-3 py-2 text-center text-gray-800 font-bold bg-green-50">
-                                        {{p.carga_asignada_actual}}
-                                    </td>
-                                    <td class="px-3 py-2 text-center">
-                                        {{p.grupos_asignados}}
-                                    </td>
-                                    <td class="px-3 py-2 text-xs text-gray-600">
-                                        {{p.departamento_adscripcion || "-"}}
-                                    </td>
-                                    <td class="px-3 py-2 text-center">
-                                        <button ng-click="generarPDFCarga(p)" 
-                                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded shadow transition-all text-xs disabled:opacity-50 disabled:bg-gray-300 disabled:cursor-not-allowed" 
-                                                ng-disabled="p.carga_asignada_actual == 0 || !p.carga_asignada_actual" 
-                                                title="Descargar Carga Horaria">
-                                            📄 PDF
-                                        </button>
-                                    </td>
+                                    <td class="px-3 py-2 text-center text-gray-800 font-bold bg-green-50">{{p.carga_asignada_actual}}</td>
+                                    <td class="px-3 py-2 text-center">{{p.grupos_asignados}}</td>
+                                    <td class="px-3 py-2 text-xs text-gray-600">{{p.departamento_adscripcion || "-"}}</td>
+                                    <td class="px-3 py-2 text-center"><button ng-click="generarPDFCarga(p)" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded shadow transition-all text-xs disabled:opacity-50 disabled:bg-gray-300 disabled:cursor-not-allowed" ng-disabled="p.carga_asignada_actual == 0 || !p.carga_asignada_actual" title="Descargar Carga Horaria">📄 PDF</button></td>
                                 </tr>
-                                <tr ng-if="profesoresFiltradosArray.length === 0">
-                                    <td colspan="14" class="px-3 py-6 text-center text-gray-500">Sin resultados de búsqueda.</td>
-                                </tr>
+                                <tr ng-if="profesoresFiltradosArray.length === 0"><td colspan="14" class="px-3 py-6 text-center text-gray-500">Sin resultados de búsqueda.</td></tr>
                             </tbody>
                         </table>
                     </div>
 
                     <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="profesoresFiltradosArray.length > 0">
-                        <button ng-click="paginaAnteriorProf()" 
-                                ng-disabled="paginaActualProf == 1" 
-                                class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">
-                            &laquo; Anterior
-                        </button>
-                        
-                        <span class="font-semibold text-gray-600 text-sm">
-                            Página {{paginaActualProf}} de {{ getPaginasProf(profesoresFiltradosArray) }}
-                        </span>
-                        
-                        <button ng-click="paginaSiguienteProf(profesoresFiltradosArray)" 
-                                ng-disabled="paginaActualProf >= getPaginasProf(profesoresFiltradosArray)" 
-                                class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">
-                            Siguiente &raquo;
-                        </button>
+                        <button ng-click="paginaAnteriorProf()" ng-disabled="paginaActualProf == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">&laquo; Anterior</button>
+                        <span class="font-semibold text-gray-600 text-sm">Página {{paginaActualProf}} de {{ getPaginasProf(profesoresFiltradosArray) }}</span>
+                        <button ng-click="paginaSiguienteProf(profesoresFiltradosArray)" ng-disabled="paginaActualProf >= getPaginasProf(profesoresFiltradosArray)" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">Siguiente &raquo;</button>
                     </div>
                 </section>
             </div>
@@ -579,80 +346,175 @@
                         </button>
                     </div>
 
-                    <div class="bg-orange-50 p-4 rounded-lg border border-orange-200 mb-6 flex flex-col md:flex-row gap-4 items-center">
-                        <div class="flex-1">
-                            <label class="text-xs font-bold text-orange-800 block mb-1">Filtrar tabla por Materia o Aula:</label>
-                            <input type="text" ng-model="busquedaTablaAulas" class="w-full border rounded p-2 focus:ring-2 focus:ring-orange-500 uppercase" placeholder="Buscar materia, clave o aula...">
+                    <div class="flex space-x-2 border-b-2 border-gray-100 mb-6">
+                        <button ng-click="tabAulas = 'gestion'" ng-class="tabAulas == 'gestion' ? 'bg-orange-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" class="px-5 py-2 rounded-t-lg transition-colors text-sm">✓ Gestión de Espacios</button>
+                        <button ng-click="tabAulas = 'reporte'" ng-class="tabAulas == 'reporte' ? 'bg-indigo-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" class="px-5 py-2 rounded-t-lg transition-colors text-sm">📊 Reporte Tabular</button>
+                        <button ng-click="tabAulas = 'matriz'" ng-class="tabAulas == 'matriz' ? 'bg-green-600 text-white font-bold shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'" class="px-5 py-2 rounded-t-lg transition-colors text-sm">📅 Matriz de Disponibilidad</button>
+                    </div>
+
+                    <div ng-show="tabAulas == 'gestion'">
+                        <div class="bg-orange-50 p-4 rounded-lg border border-orange-200 mb-6 flex flex-col md:flex-row gap-4 items-center">
+                            <div class="flex-1">
+                                <label class="text-xs font-bold text-orange-800 block mb-1">Filtrar tabla por Materia o Aula:</label>
+                                <input type="text" ng-model="busquedaTablaAulas" class="w-full border rounded p-2 focus:ring-2 focus:ring-orange-500 uppercase" placeholder="Buscar materia, clave o aula...">
+                            </div>
+                            <div class="flex gap-2">
+                                <div class="bg-white p-2 rounded border text-center shadow-sm">
+                                    <span class="block text-[10px] font-bold text-gray-400">MATERIAS PRESENCIALES</span>
+                                    <span class="text-lg font-bold text-orange-600">{{ totalPresenciales }}</span>
+                                </div>
+                                <div class="bg-white p-2 rounded border text-center shadow-sm">
+                                    <span class="block text-[10px] font-bold text-gray-400">CON AULA ASIGNADA</span>
+                                    <span class="text-lg font-bold text-green-600">{{ materiasConAula }}</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flex gap-2">
-                            <div class="bg-white p-2 rounded border text-center shadow-sm">
-                                <span class="block text-[10px] font-bold text-gray-400">MATERIAS PRESENCIALES</span>
-                                <span class="text-lg font-bold text-orange-600">{{ totalPresenciales }}</span>
-                            </div>
-                            <div class="bg-white p-2 rounded border text-center shadow-sm">
-                                <span class="block text-[10px] font-bold text-gray-400">CON AULA ASIGNADA</span>
-                                <span class="text-lg font-bold text-green-600">{{ materiasConAula }}</span>
-                            </div>
+
+                        <div class="overflow-x-auto rounded-lg border bg-white">
+                            <table class="w-full table-auto text-sm text-left">
+                                <thead class="bg-gray-100 text-gray-700">
+                                    <tr>
+                                        <th class="px-3 py-2">Materia / Grupo</th>
+                                        <th class="px-3 py-2">Días y Horario</th>
+                                        <th class="px-3 py-2">Profesor Asignado</th>
+                                        <th class="px-3 py-2 text-center">Aula / Espacio</th>
+                                        <th class="px-3 py-2 text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in (filtradosAulasArray = (tablaCruceAulas | filter:busquedaTablaAulas)) | limitTo: 20 : (paginaAulas - 1) * 20" class="border-t hover:bg-orange-50">
+                                        <td class="px-3 py-3">
+                                            <div class="font-bold text-gray-800">{{ item.materia }} <span class="text-xs text-gray-500 font-normal">({{item.grupo}})</span></div>
+                                            <div class="text-[10px] text-gray-500 uppercase">{{ item.programa_educativo }} | Clave: {{ item.clave }} | CRN: {{ item.crn || 'S/N' }}</div>
+                                        </td>
+                                        <td class="px-3 py-3">
+                                            <span class="bg-blue-50 text-blue-800 text-[10px] font-bold px-2 py-1 rounded border border-blue-200 block text-center">
+                                                {{ item.dias || 'SIN HORARIO' }} <br> {{ item.horario }}
+                                            </span>
+                                        </td>
+                                        <td class="px-3 py-3">
+                                            <div class="text-xs font-semibold text-indigo-700">{{ item.nombre_profesor || 'PENDIENTE' }}</div>
+                                            <div class="text-[9px] text-gray-400 italic">{{ item.tipo_asignacion || '-' }}</div>
+                                        </td>
+                                        <td class="px-3 py-3 text-center">
+                                            <div ng-show="item.nomenclatura_aula" class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold inline-block border border-green-300 shadow-sm">
+                                                {{ item.nomenclatura_aula }}
+                                                <span class="block text-[8px] font-normal uppercase">{{ item.espacio_aula }}</span>
+                                            </div>
+                                            <div ng-show="!item.nomenclatura_aula && item.es_presencial" class="text-gray-400 italic text-xs">Sin asignar</div>
+                                            <div ng-show="!item.es_presencial" class="text-gray-400 italic text-xs">- N/A -</div>
+                                        </td>
+                                        <td class="px-3 py-3 text-center">
+                                            <button ng-show="!item.nomenclatura_aula && item.es_presencial" 
+                                                    ng-click="abrirModalAula(item)" 
+                                                    class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-1 px-3 rounded text-[10px] shadow transition-all">
+                                                VINCULAR AULA
+                                            </button>
+                                            <button ng-show="item.nomenclatura_aula" 
+                                                    ng-click="desasignarAula(item)" 
+                                                    class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-[10px] shadow transition-all">
+                                                BAJA AULA
+                                            </button>
+                                            <span ng-show="!item.es_presencial" class="text-[9px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded border">VIRTUAL / S.H.</span>
+                                        </td>
+                                    </tr>
+                                    <tr ng-if="filtradosAulasArray.length === 0"><td colspan="5" class="px-3 py-6 text-center text-gray-500">Sin resultados de materias para aulas.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="filtradosAulasArray.length > 0">
+                            <button ng-click="paginaAnteriorAulas()" ng-disabled="paginaAulas == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">&laquo; Anterior</button>
+                            <span class="font-semibold text-gray-600 text-sm">Página {{paginaAulas}} de {{ getPaginasAulas(filtradosAulasArray) }}</span>
+                            <button ng-click="paginaSiguienteAulas(filtradosAulasArray)" ng-disabled="paginaAulas >= getPaginasAulas(filtradosAulasArray)" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">Siguiente &raquo;</button>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto rounded-lg border">
-                        <table class="w-full table-auto text-sm text-left">
-                            <thead class="bg-gray-100 text-gray-700">
-                                <tr>
-                                    <th class="px-3 py-2">Materia / Grupo</th>
-                                    <th class="px-3 py-2">Días y Horario</th>
-                                    <th class="px-3 py-2">Profesor Asignado</th>
-                                    <th class="px-3 py-2 text-center">Aula / Espacio</th>
-                                    <th class="px-3 py-2 text-center">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in (filtradosAulasArray = (tablaCruceAulas | filter:busquedaTablaAulas)) | limitTo: 20 : (paginaAulas - 1) * 20" class="border-t hover:bg-orange-50">
-                                    <td class="px-3 py-3">
-                                        <div class="font-bold text-gray-800">{{ item.materia }} <span class="text-xs text-gray-500 font-normal">({{item.grupo}})</span></div>
-                                        <div class="text-[10px] text-gray-500 uppercase">{{ item.programa_educativo }} | Clave: {{ item.clave }} | CRN: {{ item.crn || 'S/N' }}</div>
-                                    </td>
-                                    <td class="px-3 py-3">
-                                        <span class="bg-blue-50 text-blue-800 text-[10px] font-bold px-2 py-1 rounded border border-blue-200 block text-center">
-                                            {{ item.dias || 'SIN HORARIO' }} <br> {{ item.horario }}
-                                        </span>
-                                    </td>
-                                    <td class="px-3 py-3">
-                                        <div class="text-xs font-semibold text-indigo-700">{{ item.nombre_profesor || 'PENDIENTE' }}</div>
-                                        <div class="text-[9px] text-gray-400 italic">{{ item.tipo_asignacion || '-' }}</div>
-                                    </td>
-                                    <td class="px-3 py-3 text-center">
-                                        <div ng-show="item.nomenclatura_aula" class="bg-green-100 text-green-800 px-2 py-1 rounded font-bold inline-block border border-green-300 shadow-sm">
-                                            {{ item.nomenclatura_aula }}
-                                            <span class="block text-[8px] font-normal uppercase">{{ item.espacio_aula }}</span>
-                                        </div>
-                                        <div ng-show="!item.nomenclatura_aula && item.es_presencial" class="text-gray-400 italic text-xs">Sin asignar</div>
-                                        <div ng-show="!item.es_presencial" class="text-gray-400 italic text-xs">- N/A -</div>
-                                    </td>
-                                    <td class="px-3 py-3 text-center">
-                                        <button ng-show="!item.nomenclatura_aula && item.es_presencial" 
-                                                ng-click="abrirModalAula(item)" 
-                                                class="bg-orange-600 hover:bg-orange-700 text-white font-bold py-1 px-3 rounded text-[10px] shadow transition-all">
-                                            VINCULAR AULA
-                                        </button>
-                                        <button ng-show="item.nomenclatura_aula" 
-                                                ng-click="desasignarAula(item)" 
-                                                class="bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-[10px] shadow transition-all">
-                                            BAJA AULA
-                                        </button>
-                                        <span ng-show="!item.es_presencial" class="text-[9px] font-bold text-gray-400 bg-gray-100 px-2 py-1 rounded border">VIRTUAL / S.H.</span>
-                                    </td>
-                                </tr>
-                                <tr ng-if="filtradosAulasArray.length === 0"><td colspan="5" class="px-3 py-6 text-center text-gray-500">Sin resultados de materias para aulas.</td></tr>
-                            </tbody>
-                        </table>
+                    <div ng-show="tabAulas == 'reporte'">
+                        <div class="mb-4 mt-4">
+                            <label class="text-xs font-bold text-indigo-800 block mb-1">Búsqueda en Reporte Tabular:</label>
+                            <input type="text" ng-model="busquedaReporteTabular" class="w-full md:w-1/2 border rounded p-2 focus:ring-2 focus:ring-indigo-500 uppercase" placeholder="Buscar por CRN, Clave, Materia o Profesor...">
+                        </div>
+                        <div class="overflow-x-auto rounded-lg border bg-white mt-4">
+                            <table class="w-full table-auto text-sm text-left whitespace-nowrap">
+                                <thead class="bg-indigo-100 text-indigo-900 border-b">
+                                    <tr>
+                                        <th class="px-3 py-2 font-semibold">CRN</th>
+                                        <th class="px-3 py-2 font-semibold">Clave</th>
+                                        <th class="px-3 py-2 font-semibold">Materia</th>
+                                        <th class="px-3 py-2 font-semibold">Programa Educativo</th>
+                                        <th class="px-3 py-2 font-semibold text-center">Cupo</th>
+                                        <th class="px-3 py-2 font-semibold text-center">Presencial</th>
+                                        <th class="px-3 py-2 font-semibold text-center">Días Impartición</th>
+                                        <th class="px-3 py-2 font-semibold text-center">Horario</th>
+                                        <th class="px-3 py-2 font-semibold">Código Prof.</th>
+                                        <th class="px-3 py-2 font-semibold">Profesor Asignado</th>
+                                        <th class="px-3 py-2 font-semibold">Tipo Asignación</th>
+                                        <th class="px-3 py-2 font-semibold">Aula / Espacio</th>
+                                        <th class="px-3 py-2 font-semibold">Tipo Espacio</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="i in tablaCruceAulas | filter:busquedaReporteTabular" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
+                                        <td class="px-3 py-2 font-mono text-gray-600">{{i.crn || 'S/N'}}</td>
+                                        <td class="px-3 py-2 font-bold">{{i.clave}}</td>
+                                        <td class="px-3 py-2">{{i.materia}}</td>
+                                        <td class="px-3 py-2">{{i.programa_educativo}}</td>
+                                        <td class="px-3 py-2 text-center">{{i.cupo}}</td>
+                                        <td class="px-3 py-2 text-center font-bold" ng-class="i.es_presencial ? 'text-green-600' : 'text-red-500'">{{i.es_presencial ? 'SÍ' : 'NO'}}</td>
+                                        <td class="px-3 py-2 text-center">{{i.dias}}</td>
+                                        <td class="px-3 py-2 text-center">{{i.horario}}</td>
+                                        <td class="px-3 py-2 font-mono">{{i.codigo_profesor || '-'}}</td>
+                                        <td class="px-3 py-2 font-semibold text-indigo-700">{{i.nombre_profesor || '-'}}</td>
+                                        <td class="px-3 py-2 text-xs">{{i.tipo_asignacion || '-'}}</td>
+                                        <td class="px-3 py-2 font-bold" ng-class="i.nomenclatura_aula ? 'text-green-700' : 'text-gray-400'">{{i.nomenclatura_aula || 'Sin Asignar'}}</td>
+                                        <td class="px-3 py-2 text-xs uppercase">{{i.espacio_aula || '-'}}</td>
+                                    </tr>
+                                    <tr ng-if="tablaCruceAulas.length === 0"><td colspan="13" class="px-3 py-6 text-center text-gray-500">No hay datos.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                    
-                    <div class="flex justify-between items-center mt-4 bg-gray-50 p-2 rounded border" ng-if="filtradosAulasArray.length > 0">
-                        <button ng-click="paginaAnteriorAulas()" ng-disabled="paginaAulas == 1" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">&laquo; Anterior</button>
-                        <span class="font-semibold text-gray-600 text-sm">Página {{paginaAulas}} de {{ getPaginasAulas(filtradosAulasArray) }}</span>
-                        <button ng-click="paginaSiguienteAulas(filtradosAulasArray)" ng-disabled="paginaAulas >= getPaginasAulas(filtradosAulasArray)" class="px-4 py-2 bg-white border rounded text-gray-600 font-semibold disabled:opacity-50 hover:bg-gray-100">Siguiente &raquo;</button>
+
+                    <div ng-show="tabAulas == 'matriz'">
+                        <div class="mb-6 mt-4">
+                            <label class="text-sm font-bold text-gray-700 mb-2 block">Seleccione el Aula o Laboratorio:</label>
+                            <select ng-model="aulaMatrizSeleccionada" ng-change="generarMatriz()" class="w-full md:w-1/2 border rounded p-2 focus:ring-2 focus:ring-orange-500 font-semibold uppercase">
+                                <option value="">-- Elija un espacio --</option>
+                                <option ng-repeat="a in listaAulas" value="{{a.nomenclatura}}">{{a.nomenclatura}} ({{a.espacio}})</option>
+                            </select>
+                        </div>
+                        
+                        <div class="overflow-x-auto rounded-lg border bg-white" ng-show="aulaMatrizSeleccionada">
+                            <table class="w-full table-bordered border text-sm text-center">
+                                <thead class="bg-gray-100 text-gray-700">
+                                    <tr>
+                                        <th class="border px-2 py-3 w-32">Horario</th>
+                                        <th class="border px-2 py-3 w-1/6">Lunes (L)</th>
+                                        <th class="border px-2 py-3 w-1/6">Martes (M)</th>
+                                        <th class="border px-2 py-3 w-1/6">Miércoles (I)</th>
+                                        <th class="border px-2 py-3 w-1/6">Jueves (J)</th>
+                                        <th class="border px-2 py-3 w-1/6">Viernes (V)</th>
+                                        <th class="border px-2 py-3 w-1/6">Sábado (S)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="hora in horariosMatriz" class="border-t">
+                                        <td class="border px-2 py-4 font-bold bg-gray-50 text-gray-700 whitespace-nowrap">{{hora}}</td>
+                                        <td class="border px-2 py-2" ng-repeat="dia in diasMatriz" ng-class="{'bg-red-50': matrizData[hora][dia], 'bg-green-50': !matrizData[hora][dia]}">
+                                            <div ng-if="matrizData[hora][dia]">
+                                                <div class="text-xs font-bold text-red-800">{{ matrizData[hora][dia].crn ? 'CRN: ' + matrizData[hora][dia].crn : matrizData[hora][dia].materia }}</div>
+                                                <div class="text-[10px] text-red-600 mt-1" ng-if="matrizData[hora][dia].crn">{{ matrizData[hora][dia].materia }}</div>
+                                            </div>
+                                            <div ng-if="!matrizData[hora][dia]" class="text-xs text-green-600 italic">Libre</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div ng-show="!aulaMatrizSeleccionada" class="p-6 text-center text-gray-500 italic bg-gray-50 rounded border mt-4">
+                            Seleccione un aula de la lista para visualizar su disponibilidad.
+                        </div>
                     </div>
                 </section>
             </div>
@@ -701,76 +563,32 @@
                     <div class="flex justify-between items-center border-b pb-2 mb-4">
                         <h2 class="text-lg font-bold text-gray-700">Historial de Grupos Asignados (Activos)</h2>
                         <div class="flex items-center gap-4">
-                            <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full border border-green-200">
-                                Total: {{misAsignaciones.length}} grupos
-                            </span>
-                            <button ng-click="exportarExcelMisAsignaciones()" 
-                                    class="bg-green-100 text-green-800 hover:bg-green-200 font-bold py-1 px-4 rounded border border-green-300 text-sm shadow-sm flex items-center gap-2">
-                                <span>📥 Exportar a Excel</span>
-                            </button>
+                            <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full border border-green-200">Total: {{misAsignaciones.length}} grupos</span>
+                            <button ng-click="exportarExcelMisAsignaciones()" class="bg-green-100 text-green-800 hover:bg-green-200 font-bold py-1 px-4 rounded border border-green-300 text-sm shadow-sm flex items-center gap-2"><span>📥 Exportar a Excel</span></button>
                         </div>
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-4 mb-4 bg-green-50 p-3 rounded border border-green-100">
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-green-800">Filtrar por Departamento de Materia:</label>
-                            <select ng-model="filtroMisAsig.departamento_materia" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-400 focus:outline-none">
-                                <option value="">Todos</option>
-                                <option ng-repeat="dep in obtenerDeptosMisAsig()" value="{{dep}}">{{dep}}</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-xs font-semibold text-green-800">Búsqueda rápida:</label>
-                            <input type="text" ng-model="busquedaMisAsignacionesTexto" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-400 focus:outline-none" placeholder="Buscar por CRN, Profesor o Materia...">
-                        </div>
+                        <div class="flex-1"><label class="text-xs font-semibold text-green-800">Filtrar por Departamento de Materia:</label><select ng-model="filtroMisAsig.departamento_materia" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-400 focus:outline-none"><option value="">Todos</option><option ng-repeat="dep in obtenerDeptosMisAsig()" value="{{dep}}">{{dep}}</option></select></div>
+                        <div class="flex-1"><label class="text-xs font-semibold text-green-800">Búsqueda rápida:</label><input type="text" ng-model="busquedaMisAsignacionesTexto" class="w-full border rounded p-2 text-sm focus:ring-2 focus:ring-green-400 focus:outline-none" placeholder="Buscar por CRN, Profesor o Materia..."></div>
                     </div>
                     
                     <div class="overflow-x-auto">
                         <table class="w-full table-auto text-sm text-left border">
                             <thead class="bg-green-100 text-green-900 border-b">
                                 <tr>
-                                    <th class="px-3 py-2 font-semibold">CRN</th>
-                                    <th class="px-3 py-2 font-semibold">Clave</th>
-                                    <th class="px-3 py-2 font-semibold w-48">Materia</th>
-                                    <th class="px-3 py-2 font-semibold text-center">Días</th>
-                                    <th class="px-3 py-2 font-semibold text-center">Horario</th>
-                                    <th class="px-3 py-2 font-semibold">Código Prof.</th>
-                                    <th class="px-3 py-2 font-semibold w-48">Nombre del Profesor</th>
-                                    <th class="px-3 py-2 font-semibold text-center text-yellow-800">Tipo</th>
-                                    <th class="px-3 py-2 font-semibold">Departamento Materia</th>
-                                    <th class="px-3 py-2 font-semibold text-center">Carga Total</th>
-                                    <th class="px-3 py-2 font-semibold text-center">Acciones</th>
+                                    <th class="px-3 py-2 font-semibold">CRN</th><th class="px-3 py-2 font-semibold">Clave</th><th class="px-3 py-2 font-semibold w-48">Materia</th><th class="px-3 py-2 font-semibold text-center">Días</th><th class="px-3 py-2 font-semibold text-center">Horario</th><th class="px-3 py-2 font-semibold">Código Prof.</th><th class="px-3 py-2 font-semibold w-48">Nombre del Profesor</th><th class="px-3 py-2 font-semibold text-center text-yellow-800">Tipo</th><th class="px-3 py-2 font-semibold">Departamento Materia</th><th class="px-3 py-2 font-semibold text-center">Carga Total</th><th class="px-3 py-2 font-semibold text-center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="asig in asignacionesFiltradas() track by asig.crn" class="border-t odd:bg-white even:bg-gray-50 hover:bg-gray-100">
-                                    <td class="px-3 py-2 font-mono text-gray-600">{{asig.crn}}</td>
-                                    <td class="px-3 py-2 font-bold">{{asig.clave_materia}}</td>
-                                    <td class="px-3 py-2 truncate max-w-xs" title="{{asig.materia}}">{{asig.materia}}</td>
-                                    <td class="px-3 py-2 text-center font-semibold">{{asig.dias}}</td>
-                                    <td class="px-3 py-2 text-center text-xs whitespace-nowrap">{{asig.horario}}</td>
-                                    <td class="px-3 py-2 font-mono">{{asig.codigo_profesor}}</td>
-                                    <td class="px-3 py-2 text-indigo-700 font-semibold">{{asig.nombre_profesor}}</td>
-                                    <td class="px-3 py-2 text-center text-xs font-bold text-yellow-700">{{asig.tipo_asignacion}}</td>
-                                    <td class="px-3 py-2 text-xs italic text-gray-600">{{asig.departamento_materia}}</td>
-                                    <td class="px-3 py-2 text-center font-bold">{{asig.carga_total}} hrs</td>
-                                    
+                                    <td class="px-3 py-2 font-mono text-gray-600">{{asig.crn}}</td><td class="px-3 py-2 font-bold">{{asig.clave_materia}}</td><td class="px-3 py-2 truncate max-w-xs" title="{{asig.materia}}">{{asig.materia}}</td><td class="px-3 py-2 text-center font-semibold">{{asig.dias}}</td><td class="px-3 py-2 text-center text-xs whitespace-nowrap">{{asig.horario}}</td><td class="px-3 py-2 font-mono">{{asig.codigo_profesor}}</td><td class="px-3 py-2 text-indigo-700 font-semibold">{{asig.nombre_profesor}}</td><td class="px-3 py-2 text-center text-xs font-bold text-yellow-700">{{asig.tipo_asignacion}}</td><td class="px-3 py-2 text-xs italic text-gray-600">{{asig.departamento_materia}}</td><td class="px-3 py-2 text-center font-bold">{{asig.carga_total}} hrs</td>
                                     <td class="px-3 py-2 text-center">
-                                        <button ng-if="usuarioTieneJurisdiccion(asig) && perfil.rol !== 'ESCOLAR'" 
-                                                ng-click="desasignarGrupo(asig)" 
-                                                class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded shadow transition-all text-xs" 
-                                                ng-disabled="cargandoDatos">
-                                            Baja
-                                        </button>
-                                        <span ng-if="!usuarioTieneJurisdiccion(asig) || perfil.rol === 'ESCOLAR'" 
-                                              class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded border border-red-200">
-                                            SIN PERMISOS
-                                        </span>
+                                        <button ng-if="usuarioTieneJurisdiccion(asig) && perfil.rol !== 'ESCOLAR'" ng-click="desasignarGrupo(asig)" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-1 px-3 rounded shadow transition-all text-xs" ng-disabled="cargandoDatos">Baja</button>
+                                        <span ng-if="!usuarioTieneJurisdiccion(asig) || perfil.rol === 'ESCOLAR'" class="text-[10px] font-bold text-red-500 bg-red-50 px-2 py-1 rounded border border-red-200">SIN PERMISOS</span>
                                     </td>
                                 </tr>
-                                <tr ng-if="misAsignaciones.length === 0">
-                                    <td colspan="11" class="px-3 py-6 text-center text-gray-500 italic">No hay grupos asignados registrados en el servidor o no coinciden con tu búsqueda.</td>
-                                </tr>
+                                <tr ng-if="misAsignaciones.length === 0"><td colspan="11" class="px-3 py-6 text-center text-gray-500 italic">No hay grupos asignados registrados en el servidor o no coinciden con tu búsqueda.</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -788,38 +606,28 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center border border-gray-100">
                         <h3 class="text-md font-bold text-gray-700 mb-4 text-center">Ocupación Espacios Físicos</h3>
-                        <div class="relative w-full max-w-xs aspect-square">
-                            <canvas id="chartAulas"></canvas>
-                        </div>
+                        <div class="relative w-full max-w-xs aspect-square"><canvas id="chartAulas"></canvas></div>
                         <p class="text-[10px] text-gray-400 mt-2 text-center">*Basado en materias presenciales</p>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center border border-gray-100">
                         <h3 class="text-md font-bold text-gray-700 mb-4 text-center">Avance Asignación Docente</h3>
-                        <div class="relative w-full max-w-xs aspect-square">
-                            <canvas id="chartGeneralMaterias"></canvas>
-                        </div>
+                        <div class="relative w-full max-w-xs aspect-square"><canvas id="chartGeneralMaterias"></canvas></div>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow flex flex-col items-center border border-gray-100">
                         <h3 class="text-md font-bold text-gray-700 mb-4 text-center">Plantilla con Carga</h3>
-                        <div class="relative w-full max-w-xs aspect-square">
-                            <canvas id="chartProfesoresCarga"></canvas>
-                        </div>
+                        <div class="relative w-full max-w-xs aspect-square"><canvas id="chartProfesoresCarga"></canvas></div>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow md:col-span-3 border border-gray-100">
                         <h3 class="text-md font-bold text-gray-700 mb-4">Distribución por Programa Académico</h3>
-                        <div class="relative w-full" style="height: 350px;">
-                            <canvas id="chartProgramas"></canvas>
-                        </div>
+                        <div class="relative w-full" style="height: 350px;"><canvas id="chartProgramas"></canvas></div>
                     </div>
 
                     <div class="bg-white p-6 rounded-lg shadow md:col-span-3 border border-gray-100">
                         <h3 class="text-md font-bold text-gray-700 mb-4">Estado por Departamento de la Materia</h3>
-                        <div class="relative w-full" style="height: 350px;">
-                            <canvas id="chartDepartamentos"></canvas>
-                        </div>
+                        <div class="relative w-full" style="height: 350px;"><canvas id="chartDepartamentos"></canvas></div>
                     </div>
                 </div>
             </div>
@@ -832,7 +640,7 @@
                 <img src="CUGDL.png" class="h-12" alt="CUGDL" onerror="this.style.display='none'">
             </div>
             <p class="font-semibold">Universidad de Guadalajara | CUGDL</p>
-            <p class="text-sm mt-2 font-bold text-blue-900">Coordinación de Programas Académicos</p>
+            <p class="text-sm mt-2 font-bold text-blue-900 italic">Coordinación de Programas Académicos</p>
         </footer>
     </div>
 
@@ -854,32 +662,13 @@
             
             // --- TABS, AULAS Y FORMULARIOS ---
             $scope.tabAsignacionDocente = 'activos'; 
-            $scope.listaGradosAcademicos = [
-                "BACHILLERATO", 
-                "LICENCIATURA", 
-                "MAESTRIA", 
-                "ESPECIALIDAD MEDICA", 
-                "DOCTORADO"
-            ];
+            $scope.listaGradosAcademicos = ["BACHILLERATO", "LICENCIATURA", "MAESTRIA", "ESPECIALIDAD MEDICA", "DOCTORADO"];
             $scope.listaCategoriasOficiales = [];
             $scope.listaAulas = [];
             $scope.guardandoNuevoProf = false;
             
-            $scope.formHomologacion = { 
-                nombre: '', 
-                paterno: '', 
-                materno: '', 
-                grado_academico: '' 
-            };
-            
-            $scope.formCaptura = { 
-                codigo: '', 
-                nombre: '', 
-                paterno: '', 
-                materno: '', 
-                grado_academico: '', 
-                categoria: '' 
-            };
+            $scope.formHomologacion = { nombre: '', paterno: '', materno: '', grado_academico: '' };
+            $scope.formCaptura = { codigo: '', nombre: '', paterno: '', materno: '', grado_academico: '', categoria: '' };
 
             // --- BASES DE DATOS GLOBALES ---
             $scope.catalogoGruposOriginal = []; 
@@ -890,15 +679,7 @@
             $scope.filtroGeneral = {};
             
             $scope.busquedaDocenteAsignacion = "";
-            $scope.asignacion = { 
-                codigo_profesor: "", 
-                nombre_profesor: "", 
-                categoria: "", 
-                departamento_adscripcion: "", 
-                carga_obligada: "", 
-                carga_asignada_previa: 0, 
-                tipo_asignacion: "" 
-            };
+            $scope.asignacion = { codigo_profesor: "", nombre_profesor: "", categoria: "", departamento_adscripcion: "", carga_obligada: "", carga_asignada_previa: 0, tipo_asignacion: "" };
             
             $scope.profesoresBD = []; 
             $scope.busquedaProfesorTexto = "";
@@ -909,6 +690,7 @@
             $scope.filtroMisAsig = { departamento_materia: '' }; 
 
             // --- ESTADOS AULAS ---
+            $scope.tabAulas = 'gestion';
             $scope.aulasAsignadasServer = [];
             $scope.tablaCruceAulas = [];
             $scope.busquedaTablaAulas = "";
@@ -919,6 +701,13 @@
             $scope.guardandoAula = false;
             $scope.totalPresenciales = 0;
             $scope.materiasConAula = 0;
+            
+            // Matriz
+            $scope.horariosMatriz = ["07:00 - 08:55", "09:00 - 10:55", "11:00 - 12:55", "13:00 - 14:55", "15:00 - 16:55", "17:00 - 18:55", "19:00 - 20:55"];
+            $scope.diasMatriz = ['L', 'M', 'I', 'J', 'V', 'S'];
+            $scope.aulaMatrizSeleccionada = "";
+            $scope.matrizData = {};
+            $scope.busquedaReporteTabular = "";
 
             // --- PAGINACIÓN ---
             $scope.paginaActual = 1; 
@@ -953,25 +742,16 @@
                     $scope.listaCategoriasOficiales = res[2].data.categorias || [];
                     $scope.listaAulas = res[3].data || [];
 
-                    google.accounts.id.initialize({ 
-                        client_id: $scope.config.CLIENT_ID, 
-                        callback: handleCredentialResponse 
-                    });
-                    
-                    google.accounts.id.renderButton(
-                        document.getElementById("googleButtonDiv"), 
-                        { theme: "outline", size: "large", width: 300 }
-                    );
+                    google.accounts.id.initialize({ client_id: $scope.config.CLIENT_ID, callback: handleCredentialResponse });
+                    google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large", width: 300 });
                 }).catch(function(error) {
-                    console.error("Falla en la carga inicial de archivos:", error);
-                    $scope.errorLogin = "Error crítico: No se encontraron los archivos base en el servidor.";
+                    console.error("Falla en la carga inicial:", error);
+                    $scope.errorLogin = "Error crítico: Faltan archivos en el servidor local.";
                 });
             };
 
             window.handleCredentialResponse = function(response) {
-                if (!response || !response.credential) {
-                    return;
-                }
+                if (!response || !response.credential) return;
                 try {
                     const data = jwt_decode(response.credential);
                     const email = data.email.toLowerCase().trim();
@@ -982,28 +762,19 @@
                             $scope.perfil = userFound;
                             $scope.correoUsuario = email;
                             $scope.usuarioAutenticado = true;
-                            $scope.errorLogin = null;
                             $scope.sincronizarSistema();
                         });
                     } else { 
-                        $timeout(function() {
-                            $scope.errorLogin = "Acceso denegado: Este correo (" + email + ") no tiene permisos asignados en el sistema.";
-                        }); 
+                        $timeout(function() { $scope.errorLogin = "Acceso denegado: Correo sin permisos."; }); 
                     }
-                } catch (err) { 
-                    $timeout(function() {
-                        $scope.errorLogin = "Error técnico al leer el certificado de identidad.";
-                    }); 
-                }
+                } catch (err) { $timeout(function() { $scope.errorLogin = "Error técnico al leer identidad."; }); }
             };
 
             // ==========================================
-            // 2. VALIDACIONES EN VIVO (Inputs y Limpieza)
+            // 2. VALIDACIONES EN VIVO
             // ==========================================
-            
             $scope.limpiarTexto = function(objeto, campo) {
                 if (objeto[campo]) {
-                    // Solo letras (con acentos) y espacios
                     let valorLimpio = objeto[campo].replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
                     objeto[campo] = valorLimpio.toUpperCase();
                 }
@@ -1011,87 +782,87 @@
 
             $scope.limpiarCodigo = function() {
                 if ($scope.formCaptura.codigo) {
-                    // Borramos letras, dejamos solo numeros \D
                     let valorNumerico = $scope.formCaptura.codigo.replace(/\D/g, '');
                     $scope.formCaptura.codigo = valorNumerico.substring(0, 7);
                 }
             };
 
             $scope.normalizarTexto = function(texto) {
-                if (!texto) {
-                    return "";
-                }
+                if (!texto) return "";
                 return texto.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toUpperCase().trim();
+            };
+
+            $scope.formatHoraLimpia = function(h) {
+                if (!h) return "00:00";
+                let s = String(h);
+                let hours, minutes;
+                
+                if (s.includes('T') && s.endsWith('Z')) {
+                    let d = new Date(s);
+                    hours = d.getHours();
+                    minutes = d.getMinutes();
+                } else if (s.includes('T')) {
+                    let timePart = s.split('T')[1].substring(0, 5);
+                    let partes = timePart.split(':');
+                    hours = parseInt(partes[0]);
+                    minutes = parseInt(partes[1]);
+                } else {
+                    let timePart = s.substring(0, 5);
+                    let partes = timePart.split(':');
+                    hours = parseInt(partes[0]);
+                    minutes = parseInt(partes[1]);
+                }
+                
+                if (!isNaN(hours) && !isNaN(minutes) && (minutes % 5 !== 0)) { 
+                    let totalMinutes = hours * 60 + minutes - 36;
+                    if (totalMinutes < 0) totalMinutes += 1440;
+                    hours = Math.floor(totalMinutes / 60);
+                    minutes = totalMinutes % 60;
+                }
+                
+                if(isNaN(hours) || isNaN(minutes)) return s.substring(0,5);
+
+                let hh = hours.toString().padStart(2, '0');
+                let mm = minutes.toString().padStart(2, '0');
+                return `${hh}:${mm}`;
             };
 
             // ==========================================
             // 3. LÓGICA DE ROLES Y PERMISOS
             // ==========================================
             $scope.usuarioTieneJurisdiccion = function(item) {
-                if (!$scope.perfil || !$scope.perfil.rol) {
-                    return false;
-                }
-                if ($scope.perfil.rol === 'ADMIN') {
-                    return true;
-                }
-                if ($scope.perfil.rol === 'ESCOLAR') {
-                    return false; 
-                }
-
+                if (!$scope.perfil || !$scope.perfil.rol) return false;
+                if ($scope.perfil.rol === 'ADMIN') return true;
+                if ($scope.perfil.rol === 'ESCOLAR') return false; 
                 const nombreDeptoBD = item.departamento || item.departamento_materia;
                 let idDeptoEncontrado = null;
-
                 angular.forEach($scope.rolesData.departamentos_diccionario, function(val, key) {
-                    if (val.alias_bd.includes(nombreDeptoBD) || val.nombre_oficial === nombreDeptoBD) {
-                        idDeptoEncontrado = key;
-                    }
+                    if (val.alias_bd.includes(nombreDeptoBD) || val.nombre_oficial === nombreDeptoBD) { idDeptoEncontrado = key; }
                 });
-                
                 return $scope.perfil.departamentos_acceso.includes(idDeptoEncontrado) || $scope.perfil.departamentos_acceso.includes("TODOS");
             };
 
             $scope.puedeGuardarAsignacion = function() {
-                if ($scope.perfil.rol === 'ESCOLAR') {
-                    return false;
-                }
-                if ($scope.contarSeleccionados() === 0) {
-                    return false;
-                }
-                if (!$scope.asignacion.codigo_profesor) {
-                    return false;
-                }
-                if (!$scope.asignacion.tipo_asignacion) {
-                    return false; 
-                }
-                
+                if ($scope.perfil.rol === 'ESCOLAR') return false;
+                if ($scope.contarSeleccionados() === 0) return false;
+                if (!$scope.asignacion.codigo_profesor) return false;
+                if (!$scope.asignacion.tipo_asignacion) return false; 
                 if ($scope.perfil.rol !== 'ADMIN') {
                     let hayMateriaAjena = $scope.resultadosBusqueda.some(r => r.seleccionado && !$scope.usuarioTieneJurisdiccion(r));
-                    if (hayMateriaAjena) {
-                        return false;
-                    }
+                    if (hayMateriaAjena) return false;
                 }
                 return true;
             };
 
             $scope.getTextoBotonGuardar = function() {
-                if ($scope.guardandoAsignacion) {
-                    return "Guardando en el servidor...";
-                }
-                if ($scope.perfil.rol === 'ESCOLAR') {
-                    return "Modo Solo Lectura";
-                }
+                if ($scope.guardandoAsignacion) return "Guardando en el servidor...";
+                if ($scope.perfil.rol === 'ESCOLAR') return "Modo Solo Lectura";
                 if ($scope.contarSeleccionados() > 0) {
-                    if (!$scope.asignacion.codigo_profesor) {
-                        return "Selecciona un Docente";
-                    }
-                    if (!$scope.asignacion.tipo_asignacion) {
-                        return "Selecciona Titular/Interino/Descarga";
-                    }
+                    if (!$scope.asignacion.codigo_profesor) return "Selecciona un Docente";
+                    if (!$scope.asignacion.tipo_asignacion) return "Selecciona Titular/Interino/Descarga";
                     if ($scope.perfil.rol !== 'ADMIN') {
                         let hayMateriaAjena = $scope.resultadosBusqueda.some(r => r.seleccionado && !$scope.usuarioTieneJurisdiccion(r));
-                        if (hayMateriaAjena) {
-                            return "Existen Materias Fuera de Jurisdicción";
-                        }
+                        if (hayMateriaAjena) return "Existen Materias Fuera de Jurisdicción";
                     }
                 }
                 return "Vincular Profesor a Grupos";
@@ -1099,9 +870,7 @@
 
             $scope.cambiarVista = function(vista) {
                 $scope.vistaPrincipal = vista;
-                if (vista === 'estadisticas') {
-                    $timeout($scope.generarEstadisticas, 150);
-                }
+                if (vista === 'estadisticas') { $timeout($scope.generarEstadisticas, 150); }
             };
 
             // ==========================================
@@ -1112,67 +881,25 @@
                 let esHomologacion = (tipo === 'HOMOLOGACION');
 
                 if (esHomologacion) {
-                    if (!$scope.formHomologacion.nombre || !$scope.formHomologacion.paterno || !$scope.formHomologacion.materno || !$scope.formHomologacion.grado_academico) {
-                        alert("Por favor, llena todos los campos obligatorios de Homologación.");
-                        return;
-                    }
-                    datosEnviar = {
-                        codigo: "GENERAR_TEMP", 
-                        nombre: $scope.normalizarTexto($scope.formHomologacion.nombre),
-                        paterno: $scope.normalizarTexto($scope.formHomologacion.paterno),
-                        materno: $scope.normalizarTexto($scope.formHomologacion.materno),
-                        grado_academico: $scope.formHomologacion.grado_academico,
-                        categoria: "PENDIENTE DE HOMOLOGAR"
-                    };
+                    if (!$scope.formHomologacion.nombre || !$scope.formHomologacion.paterno || !$scope.formHomologacion.materno || !$scope.formHomologacion.grado_academico) { alert("Por favor, llena los campos obligatorios."); return; }
+                    datosEnviar = { codigo: "GENERAR_TEMP", nombre: $scope.normalizarTexto($scope.formHomologacion.nombre), paterno: $scope.normalizarTexto($scope.formHomologacion.paterno), materno: $scope.normalizarTexto($scope.formHomologacion.materno), grado_academico: $scope.formHomologacion.grado_academico, categoria: "PENDIENTE DE HOMOLOGAR" };
                 } else {
-                    if (!$scope.formCaptura.codigo || !$scope.formCaptura.nombre || !$scope.formCaptura.paterno || !$scope.formCaptura.materno || !$scope.formCaptura.grado_academico || !$scope.formCaptura.categoria) {
-                        alert("Por favor, llena todos los campos obligatorios de Captura Manual.");
-                        return;
-                    }
-                    if ($scope.formCaptura.codigo.length < 7) {
-                        alert("El código de Captura Manual debe tener exactamente 7 dígitos.");
-                        return;
-                    }
-
-                    datosEnviar = {
-                        codigo: ($scope.formCaptura.codigo || "").toString().trim(),
-                        nombre: $scope.normalizarTexto($scope.formCaptura.nombre),
-                        paterno: $scope.normalizarTexto($scope.formCaptura.paterno),
-                        materno: $scope.normalizarTexto($scope.formCaptura.materno),
-                        grado_academico: $scope.formCaptura.grado_academico,
-                        categoria: $scope.formCaptura.categoria
-                    };
+                    if (!$scope.formCaptura.codigo || !$scope.formCaptura.nombre || !$scope.formCaptura.paterno || !$scope.formCaptura.materno || !$scope.formCaptura.grado_academico || !$scope.formCaptura.categoria) { alert("Por favor, llena los campos obligatorios."); return; }
+                    if ($scope.formCaptura.codigo.length < 7) { alert("El código debe tener 7 dígitos."); return; }
+                    datosEnviar = { codigo: ($scope.formCaptura.codigo || "").toString().trim(), nombre: $scope.normalizarTexto($scope.formCaptura.nombre), paterno: $scope.normalizarTexto($scope.formCaptura.paterno), materno: $scope.normalizarTexto($scope.formCaptura.materno), grado_academico: $scope.formCaptura.grado_academico, categoria: $scope.formCaptura.categoria };
                 }
 
-                // UNIÓN CORRECTA: PATERNO + MATERNO + NOMBRE
                 let nombreCompletoUnido = `${datosEnviar.paterno} ${datosEnviar.materno} ${datosEnviar.nombre}`.trim();
-
-                // Validar Duplicidad
                 let existeDuplicado = $scope.profesoresBD.find(prof => {
                     let nomNormalizado = $scope.normalizarTexto(prof.profesor);
-                    if (esHomologacion) {
-                        return nomNormalizado === nombreCompletoUnido;
-                    } else {
-                        let profCodigoStr = (prof.codigo || "").toString();
-                        return (profCodigoStr === datosEnviar.codigo) || (nomNormalizado === nombreCompletoUnido);
-                    }
+                    if (esHomologacion) return nomNormalizado === nombreCompletoUnido;
+                    else return ((prof.codigo || "").toString() === datosEnviar.codigo) || (nomNormalizado === nombreCompletoUnido);
                 });
 
-                if (existeDuplicado) {
-                    alert(`❌ VALIDACIÓN FALLIDA: Ya existe un profesor registrado con esos datos en el catálogo.\n\nCódigo Existente: ${existeDuplicado.codigo}\nNombre Registrado: ${existeDuplicado.profesor}`);
-                    return;
-                }
+                if (existeDuplicado) { alert(`❌ VALIDACIÓN FALLIDA: Ya existe.\n\nCódigo: ${existeDuplicado.codigo}\nNombre: ${existeDuplicado.profesor}`); return; }
 
-                // POST A APPS SCRIPT
                 $scope.guardandoNuevoProf = true;
-                let payload = {
-                    accion: 'REGISTRAR_NUEVO_PROFESOR',
-                    usuario: $scope.perfil.correo,
-                    tipo_registro: tipo,
-                    datos: datosEnviar
-                };
-
-                $http.post($scope.config.API_URL, JSON.stringify(payload), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+                $http.post($scope.config.API_URL, JSON.stringify({ accion: 'REGISTRAR_NUEVO_PROFESOR', usuario: $scope.perfil.correo, tipo_registro: tipo, datos: datosEnviar }), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
                     .then(function(response) {
                         $scope.guardandoNuevoProf = false;
                         if (response.data.status === 'success') {
@@ -1181,28 +908,17 @@
                             $scope.formCaptura = { codigo: '', nombre: '', paterno: '', materno: '', grado_academico: '', categoria: '' };
                             $scope.tabAsignacionDocente = 'activos';
                             $scope.sincronizarSistema(); 
-                        } else {
-                            alert("❌ Error: " + response.data.message);
-                        }
-                    }).catch(function() { 
-                        $scope.guardandoNuevoProf = false; 
-                        alert("Error de comunicación con Google Drive."); 
-                    });
+                        } else { alert("❌ Error: " + response.data.message); }
+                    }).catch(function() { $scope.guardandoNuevoProf = false; alert("Error de comunicación."); });
             };
 
             // ==========================================
-            // 5. DATA MERGING (EXTRACCIÓN Y FUSIÓN DE DATOS)
+            // 5. DATA MERGING
             // ==========================================
             $scope.sincronizarSistema = function() {
-                if(!$scope.config.API_URL) {
-                    alert("La URL de la API no está definida.");
-                    return;
-                }
+                if(!$scope.config.API_URL) return;
                 $scope.cargandoDatos = true;
-
-                let promesaHistorico = $http.get("BD_Profesores_Historico.json").catch(function() { 
-                    return { data: [] }; 
-                });
+                let promesaHistorico = $http.get("BD_Profesores_Historico.json").catch(function() { return { data: [] }; });
 
                 $q.all([
                     $http.get("BD_2026B.json"), 
@@ -1210,16 +926,8 @@
                     $http.get($scope.config.API_URL),
                     promesaHistorico
                 ]).then(function(respuestas) {
-                    let resGrupos = respuestas[0].data;
-                    let resProfesores = respuestas[1].data;
-                    let resBackend = respuestas[2].data;
-                    let resHistorico = respuestas[3].data;
-
-                    if (resBackend.status === 'error') { 
-                        alert("Error en el servidor: " + resBackend.message); 
-                        $scope.cargandoDatos = false; 
-                        return; 
-                    }
+                    let resGrupos = respuestas[0].data; let resProfesores = respuestas[1].data; let resBackend = respuestas[2].data; let resHistorico = respuestas[3].data;
+                    if (resBackend.status === 'error') { alert("Error servidor: " + resBackend.message); $scope.cargandoDatos = false; return; }
 
                     $scope.asignacionesGlobales = resBackend.asignaciones || [];
                     let estadoProfesores = resBackend.profesores || [];
@@ -1230,157 +938,88 @@
                     let catalogoProfesoresOficial = angular.isArray(resProfesores) ? resProfesores : (resProfesores.registros || []);
                     let catalogoHistorico = angular.isArray(resHistorico) ? resHistorico : (resHistorico.registros || []);
 
-                    // EXTRACCIÓN SEGURA DE CRNS ASIGNADOS (LA SOLUCIÓN AL ERROR .toString())
-                    let crnsAsignados = $scope.asignacionesGlobales.map(a => {
-                        return a && a.crn ? a.crn.toString() : "";
-                    });
+                    let crnsAsignados = $scope.asignacionesGlobales.map(a => (a.crn || "").toString());
+                    $scope.registrosBD = $scope.catalogoGruposOriginal.filter(g => !crnsAsignados.includes((g.crn || "").toString()));
                     
-                    $scope.registrosBD = $scope.catalogoGruposOriginal.filter(g => {
-                        let gCrnStr = g && g.crn ? g.crn.toString() : "";
-                        return !crnsAsignados.includes(gCrnStr);
-                    });
-                    
-                    // FUSIÓN DE DOCENTES OFICIALES + EXTRA
-                    let todosLosProfes = catalogoProfesoresOficial.map(p => { 
-                        p.origen = "CATALOGO"; 
-                        return p; 
-                    });
-                    
-                    profesoresExtraBackend.forEach(pe => {
-                        todosLosProfes.push({
-                            codigo: pe.codigo,
-                            profesor: pe.profesor,
-                            categoria: pe.categoria,
-                            origen: pe.tipo_registro, 
-                            departamento_adscripcion: "-" 
-                        });
-                    });
+                    let todosLosProfes = catalogoProfesoresOficial.map(p => { p.origen = "CATALOGO"; return p; });
+                    profesoresExtraBackend.forEach(pe => { todosLosProfes.push({ codigo: pe.codigo, profesor: pe.profesor, categoria: pe.categoria, origen: pe.tipo_registro, departamento_adscripcion: "-" }); });
 
-                    // ASIGNACIÓN DE HISTÓRICOS Y CARGAS
                     $scope.profesoresBD = todosLosProfes.map(pBase => {
                         let baseCodStr = (pBase.codigo || "").toString();
                         let pLive = estadoProfesores.find(pb => (pb.codigo_profesor || "").toString() === baseCodStr);
                         let pHist = catalogoHistorico.find(ph => (ph.CODIGO || "").toString() === baseCodStr || (ph.codigo || "").toString() === baseCodStr);
-
                         pBase.carga_asignada_actual = pLive ? pLive.carga_asignada_actual : 0;
                         pBase.grupos_asignados = pLive ? pLive.total_crns_asignados : 0;
-                        
                         pBase.anios_antiguedad = pBase.años_antiguedad || pBase.anos_antiguedad || 0;
                         pBase.hist_2024b = pHist ? (pHist['2024B'] || pHist['2024b'] || 0) : 0;
                         pBase.hist_2025a = pHist ? (pHist['2025A'] || pHist['2025a'] || 0) : 0;
                         pBase.hist_2025b = pHist ? (pHist['2025B'] || pHist['2025b'] || 0) : 0;
                         pBase.hist_2026a = pHist ? (pHist['2026A'] || pHist['2026a'] || 0) : 0;
-
                         return pBase;
                     });
 
-                    // AGRUPACIÓN DE MIS ASIGNACIONES
                     let agrupados = {};
                     $scope.asignacionesGlobales.forEach(a => {
                         let aCrnStr = (a.crn || "").toString();
-                        if (aCrnStr === "") return; // Ignoramos si el backend mando algo roto
-
+                        if (aCrnStr === "") return; 
                         if (!agrupados[aCrnStr]) {
                             let profInfo = $scope.profesoresBD.find(p => (p.codigo || "").toString() === (a.codigo_profesor || "").toString());
                             let infoBase = $scope.catalogoGruposOriginal.find(g => (g.crn || "").toString() === aCrnStr);
-                            
                             let hInicio = infoBase ? infoBase.hora_inicio : a.hora_inicio;
                             let hFin = infoBase ? infoBase.hora_fin : a.hora_fin;
-                            
-                            let formatHoraLimpia = function(h) {
-                                if (!h) return "00:00";
-                                let s = h.toString();
-                                if (s.includes('T')) return s.split('T')[1].substring(0, 5);
-                                return s.substring(0, 5);
-                            };
-
                             agrupados[aCrnStr] = {
-                                crn: a.crn, 
-                                clave_materia: a.clave_materia, 
+                                crn: a.crn, clave_materia: a.clave_materia, 
                                 materia: a.materia || (infoBase ? infoBase.materia : "Materia Desconocida"), 
-                                dias: a.dias_imparticion || (infoBase ? $scope.formatearDias(infoBase) : "-"),
-                                horario: formatHoraLimpia(hInicio) + " - " + formatHoraLimpia(hFin),
-                                codigo_profesor: a.codigo_profesor,
-                                nombre_profesor: a.nombre_profesor, 
-                                tipo_asignacion: a.tipo_asignacion || "-", 
-                                carga_total: 0, 
-                                departamento_materia: infoBase ? infoBase.departamento : "Desconocido/No en catálogo", 
-                                departamento_profesor: profInfo ? profInfo.departamento_adscripcion : '-' 
+                                dias: a.dias_imparticion || (infoBase ? $scope.formatearDiasStr(infoBase) : "-"),
+                                horario: $scope.formatHoraLimpia(hInicio) + " - " + $scope.formatHoraLimpia(hFin),
+                                codigo_profesor: a.codigo_profesor, nombre_profesor: a.nombre_profesor, 
+                                tipo_asignacion: a.tipo_asignacion || "-", carga_total: 0, 
+                                departamento_materia: infoBase ? infoBase.departamento : "Desconocido", 
+                                departamento_profesor: profInfo ? profInfo.departamento_adscripcion : '-',
+                                id_registro_json: infoBase ? infoBase.id : (a.id_registro_json || null)
                             };
                         }
                         agrupados[aCrnStr].carga_total += parseFloat(a.carga_horaria_fila) || 0;
                     });
-                    
                     $scope.misAsignaciones = Object.values(agrupados);
 
-                    // EJECUCIÓN DEL JOIN MAESTRO DE AULAS
                     $scope.realizarCruceMaestroAulas();
 
-                    // RESTABLECER PÁGINAS
-                    $scope.paginaActual = 1;
-                    $scope.paginaActualProf = 1;
-                    $scope.paginaAulas = 1;
-                    
-                    if($scope.vistaPrincipal === 'estadisticas') {
-                        $scope.generarEstadisticas();
-                    }
-                    
+                    $scope.paginaActual = 1; $scope.paginaActualProf = 1; $scope.paginaAulas = 1;
+                    if($scope.vistaPrincipal === 'estadisticas') $scope.generarEstadisticas();
                     $scope.cargandoDatos = false;
                 }).catch(function(error) { 
-                    console.error("Detalle del Error de Sincronización:", error);
-                    alert("Fallo la sincronización. Revisa tu consola (F12) o verifica los JSON."); 
-                    $scope.cargandoDatos = false; 
+                    console.error("Error Sincronización:", error); $scope.cargandoDatos = false; 
                 });
             };
 
-            // ==========================================
-            // JOIN MAESTRO DE AULAS (La Solución Visionaria)
-            // ==========================================
             $scope.realizarCruceMaestroAulas = function() {
                 $scope.tablaCruceAulas = $scope.catalogoGruposOriginal.map(g => {
                     let gIdStr = (g.id || "").toString();
                     let asigDoc = $scope.asignacionesGlobales.find(ad => (ad.id_registro_json || "").toString() === gIdStr);
                     let asigAula = $scope.aulasAsignadasServer.find(aa => (aa.id_registro_json || "").toString() === gIdStr);
-                    
-                    let formatHoraLimpia = function(h) {
-                        if (!h) return "00:00";
-                        let s = h.toString();
-                        if (s.includes('T')) return s.split('T')[1].substring(0, 5);
-                        return s.substring(0, 5);
-                    };
-
                     let c_hIni = asigDoc ? asigDoc.hora_inicio : g.hora_inicio;
                     let c_hFin = asigDoc ? asigDoc.hora_fin : g.hora_fin;
 
                     return {
-                        id_registro_json: g.id,
-                        crn: g.crn,
-                        clave: g.clave,
-                        materia: g.materia,
-                        grupo: g.grupo,
-                        programa_educativo: g.programa_educativo,
-                        cupo: parseInt(g.cupo) || 0,
-                        dias: asigDoc ? asigDoc.dias_imparticion : $scope.formatearDias(g),
-                        horario: `${formatHoraLimpia(c_hIni)} - ${formatHoraLimpia(c_hFin)}`,
-                        nombre_profesor: asigDoc ? asigDoc.nombre_profesor : null,
-                        tipo_asignacion: asigDoc ? asigDoc.tipo_asignacion : null,
-                        nomenclatura_aula: asigAula ? asigAula.nomenclatura_aula : null,
-                        espacio_aula: asigAula ? asigAula.espacio : null,
-                        es_presencial: $scope.esPresencial(g)
+                        id_registro_json: g.id, crn: g.crn, clave: g.clave, materia: g.materia, grupo: g.grupo, programa_educativo: g.programa_educativo,
+                        cupo: parseInt(g.cupo) || 0, dias: asigDoc ? asigDoc.dias_imparticion : $scope.formatearDiasStr(g),
+                        horario: `${$scope.formatHoraLimpia(c_hIni)} - ${$scope.formatHoraLimpia(c_hFin)}`,
+                        codigo_profesor: asigDoc ? asigDoc.codigo_profesor : null, nombre_profesor: asigDoc ? asigDoc.nombre_profesor : null, tipo_asignacion: asigDoc ? asigDoc.tipo_asignacion : null,
+                        nomenclatura_aula: asigAula ? asigAula.nomenclatura_aula : null, espacio_aula: asigAula ? asigAula.espacio : null,
+                        es_presencial: $scope.esPresencialStr(g)
                     };
                 });
-
                 $scope.totalPresenciales = $scope.tablaCruceAulas.filter(x => x.es_presencial).length;
                 $scope.materiasConAula = $scope.tablaCruceAulas.filter(x => x.nomenclatura_aula).length;
+                $scope.generarMatriz();
             };
 
             // ==========================================
-            // 6. ASIGNACIÓN DE AULAS Y PROFESORES (POSTS)
+            // 6. ASIGNACIÓN AULAS Y POSTS
             // ==========================================
             $scope.abrirModalAula = function(item) {
-                $scope.selectedMateriaAula = item;
-                $scope.inputAulaAsignar = "";
-                $scope.mostrarModalAula = true;
+                $scope.selectedMateriaAula = item; $scope.inputAulaAsignar = ""; $scope.mostrarModalAula = true;
             };
 
             $scope.filtroCapacidadAula = function(aula) {
@@ -1390,139 +1029,109 @@
 
             $scope.guardarAsignacionAula = function() {
                 if(!$scope.inputAulaAsignar) return;
-                
                 let aulaInfo = $scope.listaAulas.find(a => a.nomenclatura === $scope.inputAulaAsignar);
                 let payload = {
-                    accion: 'ASIGNAR_AULA',
-                    usuario: $scope.correoUsuario,
-                    registro: {
-                        id_registro_json: $scope.selectedMateriaAula.id_registro_json,
-                        crn: $scope.selectedMateriaAula.crn,
-                        materia: $scope.selectedMateriaAula.materia,
-                        nomenclatura_aula: $scope.inputAulaAsignar,
-                        espacio: aulaInfo.espacio,
-                        dias: $scope.selectedMateriaAula.dias,
-                        horario: $scope.selectedMateriaAula.horario
-                    }
+                    accion: 'ASIGNAR_AULA', usuario: $scope.correoUsuario,
+                    registro: { id_registro_json: $scope.selectedMateriaAula.id_registro_json, crn: $scope.selectedMateriaAula.crn, materia: $scope.selectedMateriaAula.materia, nomenclatura_aula: $scope.inputAulaAsignar, espacio: aulaInfo.espacio, dias: $scope.selectedMateriaAula.dias, horario: $scope.selectedMateriaAula.horario }
                 };
 
                 $scope.guardandoAula = true;
                 $http.post($scope.config.API_URL, JSON.stringify(payload), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
                     .then(function(res) {
                         $scope.guardandoAula = false;
-                        if(res.data.status === 'success') {
-                            alert("✅ Aula vinculada exitosamente.");
-                            $scope.mostrarModalAula = false;
-                            $scope.sincronizarSistema();
-                        } else if(res.data.status === 'error_empalme') {
-                            alert("❌ EMPALME DETECTADO: " + res.data.message);
-                        } else {
-                            alert("Error: " + res.data.message);
-                        }
-                    }).catch(function(err) {
-                        $scope.guardandoAula = false;
-                        alert("Fallo de red al asignar aula.");
-                    });
+                        if(res.data.status === 'success') { alert("✅ Aula vinculada."); $scope.mostrarModalAula = false; $scope.sincronizarSistema(); } 
+                        else if(res.data.status === 'error_empalme') { alert("❌ EMPALME: " + res.data.message); } 
+                        else { alert("Error: " + res.data.message); }
+                    }).catch(function(err) { $scope.guardandoAula = false; alert("Fallo de red."); });
             };
 
             $scope.desasignarAula = function(item) {
-                if(!confirm(`¿Liberar el aula ${item.nomenclatura_aula} de la materia ${item.materia}?`)) {
-                    return;
-                }
-                
-                $http.post($scope.config.API_URL, JSON.stringify({
-                    accion: 'BAJA_AULA',
-                    usuario: $scope.correoUsuario,
-                    id_registro_json: item.id_registro_json
-                }), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-                .then(function(res) {
-                    if(res.data.status === 'success') {
-                        $scope.sincronizarSistema();
-                    } else {
-                        alert("Error: " + res.data.message);
-                    }
-                });
+                if(!confirm(`¿Liberar el aula ${item.nomenclatura_aula} de la materia ${item.materia}?`)) return;
+                $http.post($scope.config.API_URL, JSON.stringify({ accion: 'BAJA_AULA', usuario: $scope.correoUsuario, id_registro_json: item.id_registro_json }), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+                .then(function(res) { if(res.data.status === 'success') { $scope.sincronizarSistema(); } else { alert("Error: " + res.data.message); } });
             };
 
             $scope.vincularProfesor = function() {
                 if (!$scope.puedeGuardarAsignacion()) return;
-
                 let gruposAEnviar = [];
                 $scope.resultadosBusqueda.forEach(r => {
-                    if (r.seleccionado) {
-                        gruposAEnviar.push({
-                            id_registro_json: r.id, 
-                            crn: r.crn, 
-                            materia: r.materia, 
-                            clave_materia: r.clave, 
-                            carga_horaria: r.carga_horaria,
-                            dias: $scope.formatearDias(r), 
-                            hora_inicio: r.hora_inicio, 
-                            hora_fin: r.hora_fin
-                        });
-                    }
+                    if (r.seleccionado) gruposAEnviar.push({ id_registro_json: r.id, crn: r.crn, materia: r.materia, clave_materia: r.clave, carga_horaria: r.carga_horaria, dias: $scope.formatearDiasStr(r), hora_inicio: $scope.formatHoraLimpia(r.hora_inicio), hora_fin: $scope.formatHoraLimpia(r.hora_fin) });
                 });
-
-                let payload = {
-                    accion: 'ASIGNAR_GRUPOS', 
-                    ciclo_escolar: '2026B', 
-                    usuario: $scope.perfil.correo, 
-                    profesor: { 
-                        codigo: $scope.asignacion.codigo_profesor, 
-                        nombre: $scope.asignacion.nombre_profesor,
-                        tipo_asignacion: $scope.asignacion.tipo_asignacion 
-                    },
-                    grupos: gruposAEnviar
-                };
+                let payload = { accion: 'ASIGNAR_GRUPOS', ciclo_escolar: '2026B', usuario: $scope.perfil.correo, profesor: { codigo: $scope.asignacion.codigo_profesor, nombre: $scope.asignacion.nombre_profesor, tipo_asignacion: $scope.asignacion.tipo_asignacion }, grupos: gruposAEnviar };
 
                 $scope.guardandoAsignacion = true; 
                 $http.post($scope.config.API_URL, JSON.stringify(payload), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-                    .then(function(response) {
+                    .then(function(res) {
                         $scope.guardandoAsignacion = false;
-                        if (response.data.status === 'success') {
-                            alert("✅ " + response.data.message);
-                            $scope.sincronizarSistema(); 
-                            $scope.resultadosBusqueda = []; 
-                            $scope.criterioBusqueda.clave = ""; 
-                            $scope.limpiarBusquedaProfesor();
-                        } else if (response.data.status === 'error_empalme') { 
-                            alert("❌ CONFLICTO DE HORARIO:\n\n" + response.data.message);
-                        } else { 
-                            alert("⚠️ Error del servidor: " + response.data.message); 
-                        }
-                    }).catch(function() { 
-                        $scope.guardandoAsignacion = false; 
-                        alert("Error de comunicación con Google Drive."); 
-                    });
+                        if (res.data.status === 'success') { alert("✅ " + res.data.message); $scope.sincronizarSistema(); $scope.resultadosBusqueda = []; $scope.criterioBusqueda.clave = ""; $scope.limpiarBusquedaProfesor(); } 
+                        else if (res.data.status === 'error_empalme') { alert("❌ CONFLICTO DE HORARIO:\n\n" + res.data.message); } 
+                        else { alert("⚠️ Error: " + res.data.message); }
+                    }).catch(function() { $scope.guardandoAsignacion = false; alert("Error de comunicación."); });
             };
 
             $scope.desasignarGrupo = function(asig) {
-                if(!confirm(`¿Estás seguro de cancelar la asignación del CRN ${asig.crn} al profesor ${asig.nombre_profesor}?`)) {
-                    return;
+                if(!confirm(`¿Estás seguro de cancelar la asignación del CRN ${asig.crn} al profesor ${asig.nombre_profesor}?`)) return;
+                $scope.cargandoDatos = true; 
+
+                let tieneAula = $scope.aulasAsignadasServer.find(aa => (aa.id_registro_json || "").toString() === (asig.id_registro_json || "").toString());
+                let peticiones = [];
+
+                if (tieneAula) {
+                    let payloadAula = { accion: 'BAJA_AULA', usuario: $scope.correoUsuario, id_registro_json: asig.id_registro_json };
+                    peticiones.push($http.post($scope.config.API_URL, JSON.stringify(payloadAula), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } }));
                 }
 
-                let payload = {
-                    accion: 'BAJA_ASIGNACION', 
-                    ciclo_escolar: '2026B', 
-                    usuario: $scope.perfil.correo,
-                    crn: asig.crn, 
-                    codigo_profesor: asig.codigo_profesor
-                };
+                let payloadDocente = { accion: 'BAJA_ASIGNACION', ciclo_escolar: '2026B', usuario: $scope.perfil.correo, crn: asig.crn, codigo_profesor: asig.codigo_profesor };
+                peticiones.push($http.post($scope.config.API_URL, JSON.stringify(payloadDocente), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } }));
 
-                $scope.cargandoDatos = true; 
-                $http.post($scope.config.API_URL, JSON.stringify(payload), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-                    .then(function(response) {
-                        if (response.data.status === 'success') {
-                            alert("✅ " + response.data.message);
-                            $scope.sincronizarSistema(); 
-                        } else {
-                            alert("❌ Error: " + response.data.message);
-                            $scope.cargandoDatos = false;
+                $q.all(peticiones).then(function(respuestas) {
+                    let responseDocente = respuestas[respuestas.length - 1];
+                    if (responseDocente.data.status === 'success') {
+                        if (tieneAula) { alert("✅ Asignación docente y Aula liberadas correctamente."); } 
+                        else { alert("✅ " + responseDocente.data.message); }
+                        $scope.sincronizarSistema(); 
+                    } else { alert("❌ Error: " + responseDocente.data.message); $scope.cargandoDatos = false; }
+                }).catch(function(error) {
+                    $scope.cargandoDatos = false; alert("Error de red al intentar desasignar.");
+                });
+            };
+
+            // ==========================================
+            // MATRIZ DE DISPONIBILIDAD
+            // ==========================================
+            $scope.generarMatriz = function() {
+                $scope.matrizData = {};
+                $scope.horariosMatriz.forEach(h => {
+                    $scope.matrizData[h] = {};
+                    $scope.diasMatriz.forEach(d => { $scope.matrizData[h][d] = null; });
+                });
+
+                if(!$scope.aulaMatrizSeleccionada) return;
+
+                let clasesAula = $scope.tablaCruceAulas.filter(c => c.nomenclatura_aula === $scope.aulaMatrizSeleccionada);
+                clasesAula.forEach(clase => {
+                    if(!clase.dias || !clase.horario) return;
+                    let diasClase = clase.dias.split('');
+                    let classHIni = $scope.horaAMinutosStr(clase.horario.split(' - ')[0]);
+                    let classHFin = $scope.horaAMinutosStr(clase.horario.split(' - ')[1]);
+
+                    $scope.horariosMatriz.forEach(horaRow => {
+                        let rowHIni = $scope.horaAMinutosStr(horaRow.split(' - ')[0]);
+                        let rowHFin = $scope.horaAMinutosStr(horaRow.split(' - ')[1]);
+
+                        if (classHIni < rowHFin && classHFin > rowHIni) {
+                            diasClase.forEach(dia => {
+                                if($scope.diasMatriz.includes(dia)) { $scope.matrizData[horaRow][dia] = clase; }
+                            });
                         }
-                    }).catch(function(error) {
-                        $scope.cargandoDatos = false;
-                        alert("Error de red al intentar desasignar.");
                     });
+                });
+            };
+
+            $scope.horaAMinutosStr = function(horaStr) {
+                if (!horaStr) return 0;
+                let partes = horaStr.toString().trim().split(':');
+                return (parseInt(partes[0]) * 60) + (partes[1] ? parseInt(partes[1]) : 0);
             };
 
             // ==========================================
@@ -1530,168 +1139,59 @@
             // ==========================================
             $scope.ejecutarBusqueda = function() {
                 let busqueda = ($scope.criterioBusqueda.clave || "").toUpperCase().trim();
-                if (busqueda === "") { 
-                    $scope.resultadosBusqueda = []; 
-                    return; 
-                }
-                
-                $scope.resultadosBusqueda = $scope.registrosBD.filter(function(r) {
-                    let rClave = (r.clave || "").toUpperCase();
-                    let rMateria = (r.materia || "").toUpperCase();
-                    return rClave.includes(busqueda) || rMateria.includes(busqueda);
-                });
+                if (busqueda === "") { $scope.resultadosBusqueda = []; return; }
+                $scope.resultadosBusqueda = $scope.registrosBD.filter(function(r) { return (r.clave || "").toUpperCase().includes(busqueda) || (r.materia || "").toUpperCase().includes(busqueda); });
             };
 
-            $scope.toggleSeleccionCRN = function(crn, estadoActual) {
-                if (!crn) return;
-                angular.forEach($scope.resultadosBusqueda, function(registro) {
-                    if (registro.crn === crn) { 
-                        registro.seleccionado = estadoActual; 
-                    }
-                });
-            };
-
-            $scope.formatearDias = function(registro) {
-                if(!registro) return "N/A";
-                let dias = [];
-                if(registro.l) dias.push("L");
-                if(registro.m) dias.push("M");
-                if(registro.i) dias.push("I"); 
-                if(registro.j) dias.push("J");
-                if(registro.v) dias.push("V");
-                if(registro.s) dias.push("S");
+            $scope.toggleSeleccionCRN = function(crn, estadoActual) { if (!crn) return; angular.forEach($scope.resultadosBusqueda, function(registro) { if (registro.crn === crn) registro.seleccionado = estadoActual; }); };
+            
+            $scope.formatearDiasStr = function(registro) {
+                if(!registro) return "N/A"; let dias = [];
+                if(registro.l) dias.push("L"); if(registro.m) dias.push("M"); if(registro.i) dias.push("I"); if(registro.j) dias.push("J"); if(registro.v) dias.push("V"); if(registro.s) dias.push("S");
                 return dias.join("") || "N/A";
             };
 
-            $scope.esPresencial = function(g) {
+            $scope.formatearDias = $scope.formatearDiasStr;
+
+            $scope.esPresencialStr = function(g) {
                 if(!g || !g.materia) return false;
-                let dias = $scope.formatearDias(g);
-                let matName = g.materia.toUpperCase();
+                let dias = $scope.formatearDiasStr(g); let matName = g.materia.toUpperCase();
                 return (dias.length > 0 && matName.indexOf("VIRTUAL") === -1 && matName.indexOf("S/H") === -1);
             };
 
-            $scope.calcularCargaSeleccionada = function() {
-                let cargaTotal = 0;
-                if ($scope.resultadosBusqueda) {
-                    $scope.resultadosBusqueda.forEach(r => {
-                        if (r.seleccionado) { 
-                            cargaTotal += parseFloat(r.carga_horaria) || 0; 
-                        }
-                    });
-                }
-                return cargaTotal;
-            };
-
-            $scope.contarSeleccionados = function() {
-                if(!$scope.resultadosBusqueda) return 0;
-                let crnsUnicos = new Set();
-                $scope.resultadosBusqueda.forEach(r => {
-                    if(r.seleccionado && r.crn) { 
-                        crnsUnicos.add(r.crn); 
-                    }
-                });
-                return crnsUnicos.size;
-            };
+            $scope.calcularCargaSeleccionada = function() { let cargaTotal = 0; if ($scope.resultadosBusqueda) { $scope.resultadosBusqueda.forEach(r => { if (r.seleccionado) cargaTotal += parseFloat(r.carga_horaria) || 0; }); } return cargaTotal; };
+            $scope.contarSeleccionados = function() { if(!$scope.resultadosBusqueda) return 0; let crnsUnicos = new Set(); $scope.resultadosBusqueda.forEach(r => { if(r.seleccionado && r.crn) crnsUnicos.add(r.crn); }); return crnsUnicos.size; };
 
             $scope.seleccionarProfesorDesdeLista = function() {
                 if (!$scope.busquedaDocenteAsignacion) return;
-                
-                let val = $scope.busquedaDocenteAsignacion.toUpperCase().trim();
-                let posibleCodigo = val.split(" - ")[0].trim();
-
-                let prof = $scope.profesoresBD.find(p => {
-                    let pCodStr = (p.codigo || "").toString().toUpperCase();
-                    let pNomStr = (p.profesor || "").toUpperCase();
-                    return pCodStr === posibleCodigo || pCodStr === val || pNomStr === val;
-                });
-                
-                if (prof) {
-                    $scope.asignacion.codigo_profesor = prof.codigo;
-                    $scope.asignacion.nombre_profesor = prof.profesor;
-                    $scope.asignacion.categoria = prof.categoria || "-";
-                    $scope.asignacion.departamento_adscripcion = prof.departamento_adscripcion || "-";
-                    $scope.asignacion.carga_obligada = $scope.calcularCargaObligada(prof);
-                    $scope.asignacion.carga_asignada_previa = prof.carga_asignada_actual || 0; 
-                }
+                let val = $scope.busquedaDocenteAsignacion.toUpperCase().trim(); let posibleCodigo = val.split(" - ")[0].trim();
+                let prof = $scope.profesoresBD.find(p => { let pCodStr = (p.codigo || "").toString().toUpperCase(); let pNomStr = (p.profesor || "").toUpperCase(); return pCodStr === posibleCodigo || pCodStr === val || pNomStr === val; });
+                if (prof) { $scope.asignacion.codigo_profesor = prof.codigo; $scope.asignacion.nombre_profesor = prof.profesor; $scope.asignacion.categoria = prof.categoria || "-"; $scope.asignacion.departamento_adscripcion = prof.departamento_adscripcion || "-"; $scope.asignacion.carga_obligada = $scope.calcularCargaObligada(prof); $scope.asignacion.carga_asignada_previa = prof.carga_asignada_actual || 0; }
             };
 
-            $scope.limpiarBusquedaProfesor = function() {
-                $scope.busquedaDocenteAsignacion = "";
-                $scope.asignacion = { 
-                    codigo_profesor: "", nombre_profesor: "", categoria: "", departamento_adscripcion: "", 
-                    carga_obligada: "", carga_asignada_previa: 0, tipo_asignacion: "" 
-                };
-            };
+            $scope.limpiarBusquedaProfesor = function() { $scope.busquedaDocenteAsignacion = ""; $scope.asignacion = { codigo_profesor: "", nombre_profesor: "", categoria: "", departamento_adscripcion: "", carga_obligada: "", carga_asignada_previa: 0, tipo_asignacion: "" }; };
+            $scope.calcularCargaObligada = function(p) { if (!p || !p.tipo_categoria) return "-"; let tipo = p.tipo_categoria.toString().trim().toUpperCase(); if (tipo === "ASIGNATURA") return p.horas_asignaturas_definitivas || "-"; else if (tipo === "PTC") return p["carga_mínima_obligatoria_(ptc)"] || p["carga_minima_obligatoria_(ptc)"] || "-"; else if (tipo === "CIVIL") return "-"; return "-"; };
 
-            $scope.calcularCargaObligada = function(p) {
-                if (!p || !p.tipo_categoria) return "-";
-                let tipo = p.tipo_categoria.toString().trim().toUpperCase();
-                if (tipo === "ASIGNATURA") return p.horas_asignaturas_definitivas || "-";
-                else if (tipo === "PTC") return p["carga_mínima_obligatoria_(ptc)"] || p["carga_minima_obligatoria_(ptc)"] || "-";
-                else if (tipo === "CIVIL") return "-";
-                return "-";
-            };
+            // COMBOS DESPLEGABLES
+            $scope.obtenerProgramasUnicos = function() { if (!$scope.registrosBD) return []; return [...new Set($scope.registrosBD.map(r => r.programa_educativo).filter(p => p))].sort(); };
+            $scope.obtenerDepartamentosUnicos = function() { if (!$scope.registrosBD) return []; return [...new Set($scope.registrosBD.map(r => r.departamento).filter(d => d))].sort(); };
+            $scope.obtenerDeptosProfesores = function() { if (!$scope.profesoresBD) return []; return [...new Set($scope.profesoresBD.map(p => p.departamento_adscripcion).filter(d => d && d !== '-'))].sort(); };
+            $scope.obtenerDeptosMisAsig = function() { if (!$scope.misAsignaciones) return []; return [...new Set($scope.misAsignaciones.map(a => a.departamento_materia).filter(d => d && d !== '-'))].sort(); };
 
-            // --- COMBOS DESPLEGABLES ---
-            $scope.obtenerProgramasUnicos = function() {
-                if (!$scope.registrosBD) return [];
-                return [...new Set($scope.registrosBD.map(r => r.programa_educativo).filter(p => p))].sort();
-            };
-            $scope.obtenerDepartamentosUnicos = function() {
-                if (!$scope.registrosBD) return [];
-                return [...new Set($scope.registrosBD.map(r => r.departamento).filter(d => d))].sort();
-            };
-            $scope.obtenerDeptosProfesores = function() {
-                if (!$scope.profesoresBD) return [];
-                return [...new Set($scope.profesoresBD.map(p => p.departamento_adscripcion).filter(d => d && d !== '-'))].sort();
-            };
-            $scope.obtenerDeptosMisAsig = function() {
-                if (!$scope.misAsignaciones) return [];
-                return [...new Set($scope.misAsignaciones.map(a => a.departamento_materia).filter(d => d && d !== '-'))].sort();
-            };
-
-            // --- LÓGICA DE FILTROS Y PAGINACIÓN SEGURA ---
-            $scope.asignacionesFiltradas = function() {
-                let f1 = $filter('filter')($scope.misAsignaciones, $scope.filtroMisAsig);
-                return $filter('filter')(f1, $scope.busquedaMisAsignacionesTexto);
-            };
-
-            $scope.getPaginasGrupos = function(arregloFiltrado) {
-                if (!arregloFiltrado || arregloFiltrado.length === 0) return 1;
-                return Math.ceil(arregloFiltrado.length / $scope.registrosPorPagina) || 1;
-            };
-            $scope.paginaAnterior = function() { 
-                if ($scope.paginaActual > 1) $scope.paginaActual--; 
-            };
-            $scope.paginaSiguiente = function(arregloFiltrado) { 
-                if ($scope.paginaActual < $scope.getPaginasGrupos(arregloFiltrado)) { $scope.paginaActual++; }
-            };
-
-            $scope.getPaginasProf = function(arregloFiltrado) {
-                if (!arregloFiltrado || arregloFiltrado.length === 0) return 1;
-                return Math.ceil(arregloFiltrado.length / $scope.profesoresPorPagina) || 1;
-            };
-            $scope.paginaAnteriorProf = function() { 
-                if ($scope.paginaActualProf > 1) $scope.paginaActualProf--; 
-            };
-            $scope.paginaSiguienteProf = function(arregloFiltrado) { 
-                if ($scope.paginaActualProf < $scope.getPaginasProf(arregloFiltrado)) { $scope.paginaActualProf++; }
-            };
-
-            $scope.getPaginasAulas = function(arregloFiltrado) {
-                if (!arregloFiltrado || arregloFiltrado.length === 0) return 1;
-                return Math.ceil(arregloFiltrado.length / 20) || 1;
-            };
-            $scope.paginaAnteriorAulas = function() { 
-                if ($scope.paginaAulas > 1) $scope.paginaAulas--; 
-            };
-            $scope.paginaSiguienteAulas = function(arregloFiltrado) { 
-                if ($scope.paginaAulas < $scope.getPaginasAulas(arregloFiltrado)) { $scope.paginaAulas++; }
-            };
-
+            // FILTROS Y PAGINACIÓN
+            $scope.asignacionesFiltradas = function() { let f1 = $filter('filter')($scope.misAsignaciones, $scope.filtroMisAsig); return $filter('filter')(f1, $scope.busquedaMisAsignacionesTexto); };
+            $scope.getPaginasGrupos = function(arr) { if (!arr || arr.length === 0) return 1; return Math.ceil(arr.length / $scope.registrosPorPagina) || 1; };
+            $scope.paginaAnterior = function() { if ($scope.paginaActual > 1) $scope.paginaActual--; };
+            $scope.paginaSiguiente = function(arr) { if ($scope.paginaActual < $scope.getPaginasGrupos(arr)) { $scope.paginaActual++; } };
+            $scope.getPaginasProf = function(arr) { if (!arr || arr.length === 0) return 1; return Math.ceil(arr.length / $scope.profesoresPorPagina) || 1; };
+            $scope.paginaAnteriorProf = function() { if ($scope.paginaActualProf > 1) $scope.paginaActualProf--; };
+            $scope.paginaSiguienteProf = function(arr) { if ($scope.paginaActualProf < $scope.getPaginasProf(arr)) { $scope.paginaActualProf++; } };
+            $scope.getPaginasAulas = function(arr) { if (!arr || arr.length === 0) return 1; return Math.ceil(arr.length / 20) || 1; };
+            $scope.paginaAnteriorAulas = function() { if ($scope.paginaAulas > 1) $scope.paginaAulas--; };
+            $scope.paginaSiguienteAulas = function(arr) { if ($scope.paginaAulas < $scope.getPaginasAulas(arr)) { $scope.paginaAulas++; } };
 
             // ==========================================
-            // 8. EXPORTACIÓN A EXCEL (SheetJS)
+            // 8. EXPORTACIONES A EXCEL CON HORAS LIMPIAS
             // ==========================================
             $scope.exportarExcelGrupos = function() {
                 let filtrados = $filter('filter')($scope.catalogoGruposOriginal, $scope.filtroGeneral);
@@ -1699,116 +1199,32 @@
 
                 let data = filtrados.map(g => {
                     let crnStr = (g.crn || "").toString();
-                    return {
-                        "Semestre": g.semestre, 
-                        "CRN": g.crn, 
-                        "Clave": g.clave, 
-                        "Materia": g.materia,
-                        "Grupo": g.grupo, 
-                        "Programa Educativo": g.programa_educativo, 
-                        "Carga (Hrs)": g.carga_horaria,
-                        "Horario": g.hora_inicio + " - " + g.hora_fin, 
-                        "Cupo": g.cupo,
-                        "Departamento Materia": g.departamento,
-                        "Estado Actual": crnsAsignados.includes(crnStr) ? "Asignado" : "Sin asignar"
-                    };
+                    return { "Semestre": g.semestre, "CRN": g.crn, "Clave": g.clave, "Materia": g.materia, "Grupo": g.grupo, "Programa Educativo": g.programa_educativo, "Carga (Hrs)": g.carga_horaria, "Horario": $scope.formatHoraLimpia(g.hora_inicio) + " - " + $scope.formatHoraLimpia(g.hora_fin), "Cupo": g.cupo, "Departamento Materia": g.departamento, "Estado Actual": crnsAsignados.includes(crnStr) ? "Asignado" : "Sin asignar" };
                 });
                 
-                if(data.length === 0) { 
-                    alert("No hay datos para exportar con los filtros actuales."); 
-                    return; 
-                }
-
-                let ws = XLSX.utils.json_to_sheet(data);
-                let wb = XLSX.utils.book_new(); 
-                XLSX.utils.book_append_sheet(wb, ws, "Catálogo 2026B");
-                XLSX.writeFile(wb, "Catalogo_Grupos_Estado_2026B.xlsx");
+                if(data.length === 0) { alert("No hay datos para exportar."); return; }
+                let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Catálogo 2026B"); XLSX.writeFile(wb, "Catalogo_Grupos_Estado_2026B.xlsx");
             };
 
             $scope.exportarExcelProfesores = function() {
-                let f1 = $filter('filter')($scope.profesoresBD, $scope.filtroProfesor);
-                let filtrados = $filter('filter')(f1, $scope.busquedaProfesorTexto);
-                
-                let data = filtrados.map(p => ({
-                    "Código": p.codigo, 
-                    "Nombre del Profesor": p.profesor, 
-                    "Origen de Datos": p.origen,
-                    "Categoría": p.categoria,
-                    "Años Antigüedad": p.anios_antiguedad, 
-                    "Carga Obligada (Hrs)": $scope.calcularCargaObligada(p), 
-                    "Histórico 2024B": p.hist_2024b,      
-                    "Histórico 2025A": p.hist_2025a,      
-                    "Histórico 2025B": p.hist_2025b,      
-                    "Histórico 2026A": p.hist_2026a,      
-                    "Carga Asignada Actual": p.carga_asignada_actual,
-                    "Total Grupos Asignados": p.grupos_asignados, 
-                    "Departamento de Adscripción": p.departamento_adscripcion
-                }));
-                
-                if(data.length === 0) { 
-                    alert("No hay datos para exportar."); 
-                    return; 
-                }
-
-                let ws = XLSX.utils.json_to_sheet(data);
-                let wb = XLSX.utils.book_new(); 
-                XLSX.utils.book_append_sheet(wb, ws, "Profesores");
-                XLSX.writeFile(wb, "Reporte_Docentes_2026B.xlsx");
+                let f1 = $filter('filter')($scope.profesoresBD, $scope.filtroProfesor); let filtrados = $filter('filter')(f1, $scope.busquedaProfesorTexto);
+                let data = filtrados.map(p => ({ "Código": p.codigo, "Nombre del Profesor": p.profesor, "Origen de Datos": p.origen, "Categoría": p.categoria, "Años Antigüedad": p.anios_antiguedad, "Carga Obligada (Hrs)": $scope.calcularCargaObligada(p), "Histórico 2024B": p.hist_2024b, "Histórico 2025A": p.hist_2025a, "Histórico 2025B": p.hist_2025b, "Histórico 2026A": p.hist_2026a, "Carga Asignada Actual": p.carga_asignada_actual, "Total Grupos Asignados": p.grupos_asignados, "Departamento de Adscripción": p.departamento_adscripcion }));
+                if(data.length === 0) { alert("No hay datos."); return; }
+                let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Profesores"); XLSX.writeFile(wb, "Reporte_Docentes_2026B.xlsx");
             };
 
             $scope.exportarExcelMisAsignaciones = function() {
                 let filtrados = $scope.asignacionesFiltradas();
-                
-                let data = filtrados.map(a => ({
-                    "CRN": a.crn, 
-                    "Clave": a.clave_materia, 
-                    "Materia": a.materia,
-                    "Días Impartición": a.dias, 
-                    "Horario": a.horario,
-                    "Código Profesor": a.codigo_profesor, 
-                    "Nombre Profesor": a.nombre_profesor,
-                    "Tipo de Asignación": a.tipo_asignacion, 
-                    "Departamento de la Materia": a.departamento_materia, 
-                    "Carga Sumada (Hrs)": a.carga_total
-                }));
-                
-                if(data.length === 0) { 
-                    alert("No hay datos para exportar."); 
-                    return; 
-                }
-
-                let ws = XLSX.utils.json_to_sheet(data);
-                let wb = XLSX.utils.book_new(); 
-                XLSX.utils.book_append_sheet(wb, ws, "Historial Activo");
-                XLSX.writeFile(wb, "Historial_Asignaciones_Global_2026B.xlsx");
+                let data = filtrados.map(a => ({ "CRN": a.crn, "Clave": a.clave_materia, "Materia": a.materia, "Días Impartición": a.dias, "Horario": a.horario, "Código Profesor": a.codigo_profesor, "Nombre Profesor": a.nombre_profesor, "Tipo de Asignación": a.tipo_asignacion, "Departamento de la Materia": a.departamento_materia, "Carga Sumada (Hrs)": a.carga_total }));
+                if(data.length === 0) { alert("No hay datos."); return; }
+                let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Historial Activo"); XLSX.writeFile(wb, "Historial_Asignaciones_Global_2026B.xlsx");
             };
 
             $scope.exportarReporteAulas = function() {
                 let filtrados = $filter('filter')($scope.tablaCruceAulas, $scope.busquedaTablaAulas);
-                let data = filtrados.map(i => ({
-                    "CRN": i.crn,
-                    "Clave": i.clave,
-                    "Materia": i.materia,
-                    "Programa Educativo": i.programa_educativo,
-                    "Cupo": i.cupo,
-                    "Presencial": i.es_presencial ? "SÍ" : "NO",
-                    "Días Impartición": i.dias,
-                    "Horario": i.horario,
-                    "Profesor Asignado": i.nombre_profesor || "Sin Asignar",
-                    "Tipo de Asignación": i.tipo_asignacion || "-",
-                    "Aula / Espacio Asignado": i.nomenclatura_aula || "Sin Asignar",
-                    "Tipo de Espacio": i.espacio_aula || "-"
-                }));
-
-                if(data.length === 0) { 
-                    alert("No hay datos para exportar."); 
-                    return; 
-                }
-
-                let ws = XLSX.utils.json_to_sheet(data);
-                let wb = XLSX.utils.book_new(); 
-                XLSX.utils.book_append_sheet(wb, ws, "Reporte Aulas");
-                XLSX.writeFile(wb, "Reporte_Aulas_CUGDL_2026B.xlsx");
+                let data = filtrados.map(i => ({ "CRN": i.crn, "Clave": i.clave, "Materia": i.materia, "Programa Educativo": i.programa_educativo, "Cupo": i.cupo, "Presencial": i.es_presencial ? "SÍ" : "NO", "Días Impartición": i.dias, "Horario": i.horario, "Código Prof.": i.codigo_profesor || "-", "Profesor Asignado": i.nombre_profesor || "Sin Asignar", "Tipo Asignación": i.tipo_asignacion || "-", "Aula / Espacio Asignado": i.nomenclatura_aula || "Sin Asignar", "Tipo de Espacio": i.espacio_aula || "-" }));
+                if(data.length === 0) { alert("No hay datos."); return; }
+                let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Reporte Aulas"); XLSX.writeFile(wb, "Reporte_Aulas_CUGDL_2026B.xlsx");
             };
 
             // ==========================================
@@ -1821,331 +1237,68 @@
                 
                 let bodyData = asignacionesProf.map(a => {
                     let aCrnStr = (a.crn || "").toString();
-                    let gInfo = $scope.catalogoGruposOriginal.find(g => (g.crn || "").toString() === aCrnStr);
+                    let aIdStr = (a.id_registro_json || "").toString();
+                    let gInfo = $scope.catalogoGruposOriginal.find(g => (g.id || "").toString() === aIdStr);
+                    if (!gInfo) {
+                        gInfo = $scope.catalogoGruposOriginal.find(g => (g.crn || "").toString() === aCrnStr);
+                    }
                     
                     let nombreMateria = gInfo ? gInfo.materia : (a.materia || "Materia Desconocida");
-                    let dias = gInfo ? $scope.formatearDias(gInfo) : (a.dias_imparticion || "-");
-                    
-                    let hInicio = gInfo ? gInfo.hora_inicio : a.hora_inicio;
-                    let hFin = gInfo ? gInfo.hora_fin : a.hora_fin;
+                    let dias = (a.dias_imparticion && a.dias_imparticion.trim() !== "") ? a.dias_imparticion : (gInfo ? $scope.formatearDiasStr(gInfo) : "-");
+                    let hInicio = (a.hora_inicio && a.hora_inicio.toString().trim() !== "") ? a.hora_inicio : (gInfo ? gInfo.hora_inicio : "");
+                    let hFin = (a.hora_fin && a.hora_fin.toString().trim() !== "") ? a.hora_fin : (gInfo ? gInfo.hora_fin : "");
+                    let horarioFormateado = $scope.formatHoraLimpia(hInicio) + " - " + $scope.formatHoraLimpia(hFin);
 
-                    let formatHoraLimpia = function(h) {
-                        if (!h) return "00:00";
-                        let s = h.toString();
-                        if (s.includes('T')) return s.split('T')[1].substring(0, 5);
-                        return s.substring(0, 5);
-                    };
-
-                    let horarioFormateado = formatHoraLimpia(hInicio) + " - " + formatHoraLimpia(hFin);
-
-                    return [
-                        a.crn, 
-                        a.clave_materia, 
-                        nombreMateria, 
-                        dias, 
-                        horarioFormateado, 
-                        a.carga_horaria_fila
-                    ];
+                    return [ a.crn, a.clave_materia, nombreMateria, dias, horarioFormateado, a.carga_horaria_fila ];
                 });
 
-                const { jsPDF } = window.jspdf;
-                const doc = new jsPDF();
-                
+                const { jsPDF } = window.jspdf; const doc = new jsPDF();
                 const construirDocumento = function(imgData) {
-                    if(imgData) { 
-                        doc.addImage(imgData, 'PNG', 14, 10, 40, 15); 
-                    } 
-                    
-                    doc.setFontSize(14); 
-                    doc.setTextColor(30, 58, 138); 
-                    doc.text("Carga horaria Programas Presenciales/Mixtos 2026B", 196, 20, { align: "right" });
-                    
-                    doc.setFontSize(11); 
-                    doc.setTextColor(50, 50, 50);
+                    if(imgData) doc.addImage(imgData, 'PNG', 14, 10, 40, 15); 
+                    doc.setFontSize(14); doc.setTextColor(30, 58, 138); doc.text("Carga horaria Programas Presenciales/Mixtos 2026B", 196, 20, { align: "right" });
+                    doc.setFontSize(11); doc.setTextColor(50, 50, 50); doc.setFont("helvetica", "bold"); doc.text(`Profesor(a):`, 14, 35); doc.setFont("helvetica", "normal"); doc.text(profesor.profesor, 38, 35); doc.setFont("helvetica", "bold"); doc.text(`Código:`, 14, 42); doc.setFont("helvetica", "normal"); doc.text(String(profesor.codigo), 30, 42); doc.setFont("helvetica", "bold"); doc.text(`Categoría:`, 80, 42); doc.setFont("helvetica", "normal"); doc.text(profesor.categoria || '-', 102, 42); doc.setFont("helvetica", "bold"); doc.text(`Departamento:`, 14, 49); doc.setFont("helvetica", "normal"); doc.text(profesor.departamento_adscripcion || '-', 43, 49); 
                     
                     doc.setFont("helvetica", "bold"); 
-                    doc.text(`Profesor(a):`, 14, 35);
-                    
+                    doc.text(`Carga Total Asignada:`, 14, 56); 
+                    let anchoStr = doc.getTextWidth(`Carga Total Asignada:`);
                     doc.setFont("helvetica", "normal"); 
-                    doc.text(profesor.profesor, 38, 35);
+                    doc.text(`${profesor.carga_asignada_actual} Hrs`, 14 + anchoStr + 5, 56);
                     
-                    doc.setFont("helvetica", "bold"); 
-                    doc.text(`Código:`, 14, 42);
-                    
-                    doc.setFont("helvetica", "normal"); 
-                    doc.text(String(profesor.codigo), 30, 42);
-                    
-                    doc.setFont("helvetica", "bold"); 
-                    doc.text(`Categoría:`, 80, 42);
-                    
-                    doc.setFont("helvetica", "normal"); 
-                    doc.text(profesor.categoria || '-', 102, 42);
-                    
-                    doc.setFont("helvetica", "bold"); 
-                    doc.text(`Departamento:`, 14, 49);
-                    
-                    doc.setFont("helvetica", "normal"); 
-                    doc.text(profesor.departamento_adscripcion || '-', 43, 49);
-                    
-                    doc.setFont("helvetica", "bold"); 
-                    doc.text(`Carga Total Asignada:`, 14, 56);
-                    
-                    doc.setFont("helvetica", "normal"); 
-                    doc.text(`${profesor.carga_asignada_actual} Hrs`, 54, 56);
-
-                    doc.autoTable({
-                        startY: 62,
-                        head: [['CRN', 'Clave', 'Materia', 'Días', 'Horario', 'Carga (Hrs)']],
-                        body: bodyData, 
-                        theme: 'striped', 
-                        headStyles: { fillColor: [49, 46, 129] }, 
-                        styles: { fontSize: 8 },
-                        columnStyles: { 
-                            0: { halign: 'center', cellWidth: 18 }, 
-                            1: { halign: 'center', cellWidth: 18 }, 
-                            3: { halign: 'center', cellWidth: 22 }, 
-                            4: { halign: 'center', cellWidth: 32 }, 
-                            5: { halign: 'center', cellWidth: 18 } 
-                        }
-                    });
-
-                    let finalY = doc.lastAutoTable.finalY + 15;
-                    doc.setFontSize(8); 
-                    doc.setTextColor(150, 150, 150);
-                    doc.text("Este documento es para fines informativos y puede ser modificado sin previo aviso.", 105, finalY, { align: "center" });
-
-                    doc.save(`Carga_Horaria_${profesor.codigo}_2026B.pdf`);
+                    doc.autoTable({ startY: 62, head: [['CRN', 'Clave', 'Materia', 'Días', 'Horario', 'Carga (Hrs)']], body: bodyData, theme: 'striped', headStyles: { fillColor: [49, 46, 129] }, styles: { fontSize: 8 }, columnStyles: { 0: { halign: 'center', cellWidth: 18 }, 1: { halign: 'center', cellWidth: 18 }, 3: { halign: 'center', cellWidth: 22 }, 4: { halign: 'center', cellWidth: 32 }, 5: { halign: 'center', cellWidth: 18 } } });
+                    doc.setFontSize(8); doc.setTextColor(150, 150, 150); doc.text("Documento informativo.", 105, doc.lastAutoTable.finalY + 15, { align: "center" }); doc.save(`Carga_${profesor.codigo}.pdf`);
                 };
 
                 let imgElement = document.getElementById('logoCUGDL');
-                
-                if(imgElement && imgElement.complete) {
-                    try {
-                        let canvas = document.createElement("canvas"); 
-                        canvas.width = imgElement.naturalWidth; 
-                        canvas.height = imgElement.naturalHeight;
-                        let ctx = canvas.getContext("2d"); 
-                        ctx.drawImage(imgElement, 0, 0);
-                        construirDocumento(canvas.toDataURL("image/png"));
-                    } catch(e) { 
-                        construirDocumento(null); 
-                    }
-                } else { 
-                    construirDocumento(null); 
-                }
+                if(imgElement && imgElement.complete) { try { let canvas = document.createElement("canvas"); canvas.width = imgElement.naturalWidth; canvas.height = imgElement.naturalHeight; canvas.getContext("2d").drawImage(imgElement, 0, 0); construirDocumento(canvas.toDataURL("image/png")); } catch(e) { construirDocumento(null); } } else { construirDocumento(null); }
             };
 
             // ==========================================
             // 10. MÓDULO ESTADÍSTICO (Chart.js)
             // ==========================================
             $scope.generarEstadisticas = function() {
-                if(!$scope.catalogoGruposOriginal || $scope.catalogoGruposOriginal.length === 0) {
-                    return;
-                }
+                if(!$scope.catalogoGruposOriginal || $scope.catalogoGruposOriginal.length === 0) return;
+                if(chartAulas) chartAulas.destroy(); if(chartMaterias) chartMaterias.destroy(); if(chartProfes) chartProfes.destroy(); if(chartProgramas) chartProgramas.destroy(); if(chartDepartamentos) chartDepartamentos.destroy();
+                const colBase = ['#ea580c', '#1e3a8a', '#3b82f6', '#eab308', '#94a3b8'];
 
-                if(chartAulas) chartAulas.destroy();
-                if(chartMaterias) chartMaterias.destroy();
-                if(chartProfes) chartProfes.destroy();
-                if(chartProgramas) chartProgramas.destroy();
-                if(chartDepartamentos) chartDepartamentos.destroy();
+                chartAulas = new Chart(document.getElementById('chartAulas').getContext('2d'), { type: 'doughnut', data: { labels: ['Ocupadas / Vinculadas', 'Pendientes de Asignar Aula'], datasets: [{ data: [$scope.materiasConAula, $scope.totalPresenciales - $scope.materiasConAula], backgroundColor: [colBase[0], colBase[4]], borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
 
-                const colorAzulFuerte = '#1e3a8a'; 
-                const colorAzulClaro = '#3b82f6';
-                const colorDorado = '#eab308';
-                const colorNaranja = '#ea580c';     
-                const colorGris = '#e5e7eb';
-                const colorGrisOscuro = '#94a3b8';
+                let crnsAsignados = new Set($scope.asignacionesGlobales.map(a => a.crn)).size; let crnsPendientes = new Set($scope.catalogoGruposOriginal.map(g => g.crn)).size - crnsAsignados;
+                chartMaterias = new Chart(document.getElementById('chartGeneralMaterias').getContext('2d'), { type: 'doughnut', data: { labels: ['Asignadas', 'Pendientes'], datasets: [{ data: [crnsAsignados, crnsPendientes], backgroundColor: [colBase[1], colBase[4]], borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
 
-                // --- Gráfica 1: Ocupación Aulas ---
-                let ctxAulas = document.getElementById('chartAulas').getContext('2d');
-                chartAulas = new Chart(ctxAulas, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Ocupadas / Vinculadas', 'Pendientes de Asignar Aula'],
-                        datasets: [{ 
-                            data: [$scope.materiasConAula, $scope.totalPresenciales - $scope.materiasConAula], 
-                            backgroundColor: [colorNaranja, colorGris], 
-                            borderWidth: 2, 
-                            borderColor: '#ffffff' 
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { legend: { position: 'bottom' } } 
-                    }
-                });
+                let profAsig = $scope.profesoresBD.filter(p => p.carga_asignada_actual > 0).length; let profSin = $scope.profesoresBD.length - profAsig;
+                chartProfes = new Chart(document.getElementById('chartProfesoresCarga').getContext('2d'), { type: 'pie', data: { labels: ['Con Carga', 'Sin Asignación'], datasets: [{ data: [profAsig, profSin], backgroundColor: [colBase[3], colBase[4]], borderWidth: 2 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } } });
 
-                // --- Gráfica 2: Avance de Materias Docentes ---
-                let totalCRNsUnicos = new Set($scope.catalogoGruposOriginal.map(g => g.crn)).size;
-                let crnsAsignados = new Set($scope.asignacionesGlobales.map(a => a.crn)).size;
-                let crnsNoAsignados = totalCRNsUnicos - crnsAsignados;
+                let statsP = {}; let statsD = {};
+                $scope.catalogoGruposOriginal.forEach(g => { let p = g.programa_educativo || 'Sin Programa'; let d = g.departamento || 'Sin Departamento'; if(!statsP[p]) statsP[p]={a:0, p:0}; if(!statsD[d]) statsD[d]={a:0, p:0}; });
+                let pProg = new Set(); let pDept = new Set();
+                $scope.catalogoGruposOriginal.forEach(g => { let asig = $scope.asignacionesGlobales.some(a => a.crn == g.crn); if(!pProg.has(g.crn)){ pProg.add(g.crn); let p=g.programa_educativo||'Sin Programa'; if(asig) statsP[p].a++; else statsP[p].p++; } if(!pDept.has(g.crn)){ pDept.add(g.crn); let d=g.departamento||'Sin Departamento'; if(asig) statsD[d].a++; else statsD[d].p++; } });
 
-                let ctxMaterias = document.getElementById('chartGeneralMaterias').getContext('2d');
-                chartMaterias = new Chart(ctxMaterias, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Asignadas', 'Pendientes'],
-                        datasets: [{ 
-                            data: [crnsAsignados, crnsNoAsignados], 
-                            backgroundColor: [colorAzulFuerte, colorGrisOscuro], 
-                            borderWidth: 2, 
-                            borderColor: '#ffffff' 
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { legend: { position: 'bottom' } } 
-                    }
-                });
+                let lP = Object.keys(statsP).sort();
+                chartProgramas = new Chart(document.getElementById('chartProgramas').getContext('2d'), { type: 'bar', data: { labels: lP, datasets: [{ label: 'Asignados', data: lP.map(x=>statsP[x].a), backgroundColor: colBase[2], borderRadius: 4 }, { label: 'Pendientes', data: lP.map(x=>statsP[x].p), backgroundColor: colBase[4], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } });
 
-                // --- Gráfica 3: Plantilla Docente ---
-                let totalProfes = $scope.profesoresBD.length;
-                let profesConCarga = $scope.profesoresBD.filter(p => p.carga_asignada_actual > 0).length;
-                let profesSinCarga = totalProfes - profesConCarga;
-
-                let ctxProfes = document.getElementById('chartProfesoresCarga').getContext('2d');
-                chartProfes = new Chart(ctxProfes, {
-                    type: 'pie',
-                    data: {
-                        labels: ['Con Carga', 'Sin Asignación'],
-                        datasets: [{ 
-                            data: [profesConCarga, profesSinCarga], 
-                            backgroundColor: [colorDorado, colorGrisOscuro], 
-                            borderWidth: 2, 
-                            borderColor: '#ffffff' 
-                        }]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        plugins: { legend: { position: 'bottom' } } 
-                    }
-                });
-
-                // --- Preparación de Datos Apilados ---
-                let statsProgramas = {};
-                let statsDepartamentos = {};
-                
-                $scope.catalogoGruposOriginal.forEach(g => {
-                    let prog = g.programa_educativo || 'Sin Programa Registrado';
-                    let dep = g.departamento || 'Sin Departamento Registrado';
-                    
-                    if (!statsProgramas[prog]) {
-                        statsProgramas[prog] = { asignados: 0, pendientes: 0 };
-                    }
-                    if (!statsDepartamentos[dep]) {
-                        statsDepartamentos[dep] = { asignados: 0, pendientes: 0 };
-                    }
-                });
-
-                let procesadosProg = new Set();
-                let procesadosDept = new Set();
-
-                $scope.catalogoGruposOriginal.forEach(g => {
-                    let estaAsignado = $scope.asignacionesGlobales.some(a => (a.crn || "").toString() === (g.crn || "").toString());
-
-                    if (!procesadosProg.has(g.crn)) {
-                        procesadosProg.add(g.crn);
-                        let prog = g.programa_educativo || 'Sin Programa Registrado';
-                        if(estaAsignado) {
-                            statsProgramas[prog].asignados++;
-                        } else {
-                            statsProgramas[prog].pendientes++;
-                        }
-                    }
-
-                    if (!procesadosDept.has(g.crn)) {
-                        procesadosDept.add(g.crn);
-                        let dep = g.departamento || 'Sin Departamento Registrado';
-                        if(estaAsignado) {
-                            statsDepartamentos[dep].asignados++;
-                        } else {
-                            statsDepartamentos[dep].pendientes++;
-                        }
-                    }
-                });
-
-                // --- Gráfica 4: Programas Educativos (Apiladas) ---
-                let labelsProgramas = Object.keys(statsProgramas).sort();
-                let dataAsignadosProg = labelsProgramas.map(p => statsProgramas[p].asignados);
-                let dataPendientesProg = labelsProgramas.map(p => statsProgramas[p].pendientes);
-
-                let ctxProgramas = document.getElementById('chartProgramas').getContext('2d');
-                chartProgramas = new Chart(ctxProgramas, {
-                    type: 'bar',
-                    data: {
-                        labels: labelsProgramas,
-                        datasets: [
-                            { 
-                                label: 'Grupos Asignados', 
-                                data: dataAsignadosProg, 
-                                backgroundColor: colorAzulClaro, 
-                                borderRadius: 4 
-                            },
-                            { 
-                                label: 'Grupos Pendientes', 
-                                data: dataPendientesProg, 
-                                backgroundColor: colorGrisOscuro, 
-                                borderRadius: 4 
-                            }
-                        ]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        scales: { 
-                            x: { stacked: true }, 
-                            y: { stacked: true, beginAtZero: true } 
-                        }, 
-                        plugins: { 
-                            tooltip: { mode: 'index', intersect: false }, 
-                            legend: { position: 'top' } 
-                        } 
-                    }
-                });
-
-                // --- Gráfica 5: Departamentos de la Materia (Apiladas) ---
-                let labelsDepartamentos = Object.keys(statsDepartamentos).sort();
-                let dataAsignadosDept = labelsDepartamentos.map(p => statsDepartamentos[p].asignados);
-                let dataPendientesDept = labelsDepartamentos.map(p => statsDepartamentos[p].pendientes);
-
-                let ctxDepartamentos = document.getElementById('chartDepartamentos').getContext('2d');
-                chartDepartamentos = new Chart(ctxDepartamentos, {
-                    type: 'bar',
-                    data: {
-                        labels: labelsDepartamentos,
-                        datasets: [
-                            { 
-                                label: 'Grupos Asignados', 
-                                data: dataAsignadosDept, 
-                                backgroundColor: colorAzulFuerte, 
-                                borderRadius: 4 
-                            },
-                            { 
-                                label: 'Grupos Pendientes', 
-                                data: dataPendientesDept, 
-                                backgroundColor: colorGrisOscuro, 
-                                borderRadius: 4 
-                            }
-                        ]
-                    },
-                    options: { 
-                        responsive: true, 
-                        maintainAspectRatio: false, 
-                        scales: { 
-                            x: { stacked: true }, 
-                            y: { stacked: true, beginAtZero: true } 
-                        }, 
-                        plugins: { 
-                            tooltip: { mode: 'index', intersect: false }, 
-                            legend: { position: 'top' } 
-                        } 
-                    }
-                });
+                let lD = Object.keys(statsD).sort();
+                chartDepartamentos = new Chart(document.getElementById('chartDepartamentos').getContext('2d'), { type: 'bar', data: { labels: lD, datasets: [{ label: 'Asignados', data: lD.map(x=>statsD[x].a), backgroundColor: colBase[1], borderRadius: 4 }, { label: 'Pendientes', data: lD.map(x=>statsD[x].p), backgroundColor: colBase[4], borderRadius: 4 }] }, options: { responsive: true, maintainAspectRatio: false, scales: { x: { stacked: true }, y: { stacked: true } } } });
             };
-
         });
     </script>
 </body>
