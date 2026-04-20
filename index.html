@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Módulo de Asignación y Gestión - Versión de Oro CUGDL</title>
+    <title>Módulo de Asignación y Gestión</title>
     
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -795,33 +795,17 @@
             $scope.formatHoraLimpia = function(h) {
                 if (!h) return "00:00";
                 let s = String(h);
-                let hours, minutes;
-                
-                if (s.includes('T') && s.endsWith('Z')) {
-                    let d = new Date(s);
-                    hours = d.getHours();
-                    minutes = d.getMinutes();
-                } else if (s.includes('T')) {
-                    let timePart = s.split('T')[1].substring(0, 5);
-                    let partes = timePart.split(':');
-                    hours = parseInt(partes[0]);
-                    minutes = parseInt(partes[1]);
-                } else {
-                    let timePart = s.substring(0, 5);
-                    let partes = timePart.split(':');
-                    hours = parseInt(partes[0]);
-                    minutes = parseInt(partes[1]);
-                }
-                
+                let timePart = s.includes('T') ? s.split('T')[1].substring(0, 5) : s.substring(0, 5);
+                let partes = timePart.split(':');
+                if (partes.length < 2) return timePart;
+                let hours = parseInt(partes[0]);
+                let minutes = parseInt(partes[1]);
                 if (!isNaN(hours) && !isNaN(minutes) && (minutes % 5 !== 0)) { 
                     let totalMinutes = hours * 60 + minutes - 36;
                     if (totalMinutes < 0) totalMinutes += 1440;
                     hours = Math.floor(totalMinutes / 60);
                     minutes = totalMinutes % 60;
                 }
-                
-                if(isNaN(hours) || isNaN(minutes)) return s.substring(0,5);
-
                 let hh = hours.toString().padStart(2, '0');
                 let mm = minutes.toString().padStart(2, '0');
                 return `${hh}:${mm}`;
@@ -1155,7 +1139,18 @@
 
             $scope.esPresencialStr = function(g) {
                 if(!g || !g.materia) return false;
-                let dias = $scope.formatearDiasStr(g); let matName = g.materia.toUpperCase();
+                
+                // REGLA DE ORO ACTUALIZADA: Backward Compatibility con "PE" y "MODALIDAD"
+                let valorPE = (g.pe || g.PE || "").toString().toUpperCase();
+                let valorModalidad = (g.modalidad || g.MODALIDAD || "").toString().toUpperCase();
+                
+                if (valorPE.includes("VIRTUAL") || valorModalidad.includes("VIRTUAL")) {
+                    return false;
+                }
+
+                // FALLBACK: Lógica original
+                let dias = $scope.formatearDiasStr(g); 
+                let matName = g.materia.toUpperCase();
                 return (dias.length > 0 && matName.indexOf("VIRTUAL") === -1 && matName.indexOf("S/H") === -1);
             };
 
