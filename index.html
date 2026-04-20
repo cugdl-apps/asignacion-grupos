@@ -795,17 +795,34 @@
             $scope.formatHoraLimpia = function(h) {
                 if (!h) return "00:00";
                 let s = String(h);
-                let timePart = s.includes('T') ? s.split('T')[1].substring(0, 5) : s.substring(0, 5);
-                let partes = timePart.split(':');
-                if (partes.length < 2) return timePart;
-                let hours = parseInt(partes[0]);
-                let minutes = parseInt(partes[1]);
+                let hours, minutes;
+                
+                let d = new Date(s);
+                // Validación para detectar ISO con ajuste inteligente de Browser Locale
+                if (s.includes('T') && !isNaN(d.getTime())) {
+                    hours = d.getHours();
+                    minutes = d.getMinutes();
+                } else if (s.includes('T')) {
+                    let timePart = s.split('T')[1].substring(0, 5);
+                    let partes = timePart.split(':');
+                    hours = parseInt(partes[0]);
+                    minutes = parseInt(partes[1]);
+                } else {
+                    let timePart = s.substring(0, 5);
+                    let partes = timePart.split(':');
+                    hours = parseInt(partes[0]);
+                    minutes = parseInt(partes[1]);
+                }
+                
                 if (!isNaN(hours) && !isNaN(minutes) && (minutes % 5 !== 0)) { 
                     let totalMinutes = hours * 60 + minutes - 36;
                     if (totalMinutes < 0) totalMinutes += 1440;
                     hours = Math.floor(totalMinutes / 60);
                     minutes = totalMinutes % 60;
                 }
+                
+                if(isNaN(hours) || isNaN(minutes)) return s.substring(0,5);
+
                 let hh = hours.toString().padStart(2, '0');
                 let mm = minutes.toString().padStart(2, '0');
                 return `${hh}:${mm}`;
@@ -1140,7 +1157,6 @@
             $scope.esPresencialStr = function(g) {
                 if(!g || !g.materia) return false;
                 
-                // REGLA DE ORO ACTUALIZADA: Backward Compatibility con "PE" y "MODALIDAD"
                 let valorPE = (g.pe || g.PE || "").toString().toUpperCase();
                 let valorModalidad = (g.modalidad || g.MODALIDAD || "").toString().toUpperCase();
                 
@@ -1148,7 +1164,6 @@
                     return false;
                 }
 
-                // FALLBACK: Lógica original
                 let dias = $scope.formatearDiasStr(g); 
                 let matName = g.materia.toUpperCase();
                 return (dias.length > 0 && matName.indexOf("VIRTUAL") === -1 && matName.indexOf("S/H") === -1);
@@ -1186,7 +1201,7 @@
             $scope.paginaSiguienteAulas = function(arr) { if ($scope.paginaAulas < $scope.getPaginasAulas(arr)) { $scope.paginaAulas++; } };
 
             // ==========================================
-            // 8. EXPORTACIONES A EXCEL CON HORAS LIMPIAS
+            // 8. EXPORTACIONES A EXCEL
             // ==========================================
             $scope.exportarExcelGrupos = function() {
                 let filtrados = $filter('filter')($scope.catalogoGruposOriginal, $scope.filtroGeneral);
@@ -1204,21 +1219,21 @@
             $scope.exportarExcelProfesores = function() {
                 let f1 = $filter('filter')($scope.profesoresBD, $scope.filtroProfesor); let filtrados = $filter('filter')(f1, $scope.busquedaProfesorTexto);
                 let data = filtrados.map(p => ({ "Código": p.codigo, "Nombre del Profesor": p.profesor, "Origen de Datos": p.origen, "Categoría": p.categoria, "Años Antigüedad": p.anios_antiguedad, "Carga Obligada (Hrs)": $scope.calcularCargaObligada(p), "Histórico 2024B": p.hist_2024b, "Histórico 2025A": p.hist_2025a, "Histórico 2025B": p.hist_2025b, "Histórico 2026A": p.hist_2026a, "Carga Asignada Actual": p.carga_asignada_actual, "Total Grupos Asignados": p.grupos_asignados, "Departamento de Adscripción": p.departamento_adscripcion }));
-                if(data.length === 0) { alert("No hay datos."); return; }
+                if(data.length === 0) { alert("No hay datos para exportar."); return; }
                 let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Profesores"); XLSX.writeFile(wb, "Reporte_Docentes_2026B.xlsx");
             };
 
             $scope.exportarExcelMisAsignaciones = function() {
                 let filtrados = $scope.asignacionesFiltradas();
                 let data = filtrados.map(a => ({ "CRN": a.crn, "Clave": a.clave_materia, "Materia": a.materia, "Días Impartición": a.dias, "Horario": a.horario, "Código Profesor": a.codigo_profesor, "Nombre Profesor": a.nombre_profesor, "Tipo de Asignación": a.tipo_asignacion, "Departamento de la Materia": a.departamento_materia, "Carga Sumada (Hrs)": a.carga_total }));
-                if(data.length === 0) { alert("No hay datos."); return; }
+                if(data.length === 0) { alert("No hay datos para exportar."); return; }
                 let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Historial Activo"); XLSX.writeFile(wb, "Historial_Asignaciones_Global_2026B.xlsx");
             };
 
             $scope.exportarReporteAulas = function() {
-                let filtrados = $filter('filter')($scope.tablaCruceAulas, $scope.busquedaTablaAulas);
+                let filtrados = $filter('filter')($scope.tablaCruceAulas, $scope.busquedaReporteTabular);
                 let data = filtrados.map(i => ({ "CRN": i.crn, "Clave": i.clave, "Materia": i.materia, "Programa Educativo": i.programa_educativo, "Cupo": i.cupo, "Presencial": i.es_presencial ? "SÍ" : "NO", "Días Impartición": i.dias, "Horario": i.horario, "Código Prof.": i.codigo_profesor || "-", "Profesor Asignado": i.nombre_profesor || "Sin Asignar", "Tipo Asignación": i.tipo_asignacion || "-", "Aula / Espacio Asignado": i.nomenclatura_aula || "Sin Asignar", "Tipo de Espacio": i.espacio_aula || "-" }));
-                if(data.length === 0) { alert("No hay datos."); return; }
+                if(data.length === 0) { alert("No hay datos para exportar."); return; }
                 let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Reporte Aulas"); XLSX.writeFile(wb, "Reporte_Aulas_CUGDL_2026B.xlsx");
             };
 
@@ -1231,11 +1246,10 @@
                 let asignacionesProf = $scope.asignacionesGlobales.filter(a => (a.codigo_profesor || "").toString() === (profesor.codigo || "").toString());
                 
                 let bodyData = asignacionesProf.map(a => {
-                    let aCrnStr = (a.crn || "").toString();
                     let aIdStr = (a.id_registro_json || "").toString();
                     let gInfo = $scope.catalogoGruposOriginal.find(g => (g.id || "").toString() === aIdStr);
                     if (!gInfo) {
-                        gInfo = $scope.catalogoGruposOriginal.find(g => (g.crn || "").toString() === aCrnStr);
+                        gInfo = $scope.catalogoGruposOriginal.find(g => (g.crn || "").toString() === (a.crn || "").toString());
                     }
                     
                     let nombreMateria = gInfo ? gInfo.materia : (a.materia || "Materia Desconocida");
