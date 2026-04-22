@@ -1652,12 +1652,28 @@
                 let dias = $scope.formatearDiasStr(g); let matName = g.materia.toUpperCase();
                 return (dias !== "N/A" && matName.indexOf("VIRTUAL") === -1 && matName.indexOf("S/H") === -1);
             };
-
+            /*
             $scope.calcularCargaSeleccionada = function() { 
                 let cargaTotal = 0; 
                 let crnsContados = new Set();
                 if ($scope.resultadosBusqueda) { $scope.resultadosBusqueda.forEach(r => { if (r.seleccionado && !crnsContados.has(r.crn)) { cargaTotal += parseFloat(r.carga_horaria) || 0; crnsContados.add(r.crn); } }); } 
                 if ($scope.registrosBD) { $scope.registrosBD.forEach(r => { if (r.seleccionado && !crnsContados.has(r.crn)) { cargaTotal += parseFloat(r.carga_horaria) || 0; crnsContados.add(r.crn); } }); } 
+                return cargaTotal; 
+            };
+            */
+            $scope.calcularCargaSeleccionada = function() { 
+                let cargaTotal = 0; 
+                let idsContados = new Set();
+
+                const sumar = function(r) {
+                    if (!r.seleccionado) return;
+                    if (idsContados.has(r.id)) return; // evita doble conteo si aparece en ambas listas
+                    idsContados.add(r.id);
+                    cargaTotal += (parseFloat(r.carga_horaria) || 0);
+                };
+
+                if ($scope.resultadosBusqueda) $scope.resultadosBusqueda.forEach(sumar);
+                if ($scope.registrosBD) $scope.registrosBD.forEach(sumar);
                 return cargaTotal; 
             };
 
