@@ -1511,7 +1511,7 @@
                 $http.post($scope.config.API_URL, JSON.stringify({ accion: 'BAJA_AULA', usuario: $scope.correoUsuario, id_registro_json: item.id_registro_json }), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
                 .then(function(res) { if(res.data.status === 'success') { $scope.sincronizarSistema(); } else { alert("Error: " + res.data.message); } });
             };
-
+            /*
             $scope.vincularProfesor = function() {
                 if (!$scope.puedeGuardarAsignacion()) return;
                 let gruposAEnviar = [];
@@ -1545,6 +1545,60 @@
                             alert("✅ " + res.data.message); 
                             $scope.sincronizarSistema(); 
                             // Limpiar selecciones
+                            $scope.resultadosBusqueda.forEach(r => r.seleccionado = false);
+                            $scope.registrosBD.forEach(r => r.seleccionado = false);
+                            $scope.criterioBusqueda.clave = ""; 
+                            $scope.busquedaCatalogoLibre = "";
+                            $scope.limpiarBusquedaProfesor(); 
+                        } 
+                        else if (res.data.status === 'error_empalme') { alert("❌ CONFLICTO DE HORARIO:\n\n" + res.data.message); } 
+                        else { alert("⚠️ Error: " + res.data.message); }
+                    }).catch(function() { $scope.guardandoAsignacion = false; alert("Error de comunicación."); });
+            };*/
+
+            $scope.vincularProfesor = function() {
+                if (!$scope.puedeGuardarAsignacion()) return;
+                
+                let gruposAEnviar = [];
+                let firmasEnviadas = new Set();
+
+                const recolectarFila = function(r) {
+                    if (r.seleccionado) {
+                        let firmaUnica = r.crn + "_" + $scope.formatearDiasStr(r) + "_" + r.hora_inicio;
+                        
+                        if (!firmasEnviadas.has(firmaUnica)) {
+                            firmasEnviadas.add(firmaUnica);
+                            gruposAEnviar.push({ 
+                                id_registro_json: r.id || r.crn, 
+                                crn: r.crn, 
+                                materia: r.materia, 
+                                clave_materia: r.clave, 
+                                carga_horaria: r.carga_horaria, 
+                                dias: $scope.formatearDiasStr(r), 
+                                hora_inicio: $scope.formatHoraLimpia(r.hora_inicio), 
+                                hora_fin: $scope.formatHoraLimpia(r.hora_fin) 
+                            });
+                        }
+                    }
+                };
+
+                // Recolectar desde ambas tablas sin bloquear por ID
+                $scope.resultadosBusqueda.forEach(recolectarFila);
+                $scope.registrosBD.forEach(recolectarFila);
+                
+                let payload = { accion: 'ASIGNAR_GRUPOS', ciclo_escolar: '2026B', usuario: $scope.perfil.correo, profesor: { codigo: $scope.asignacion.codigo_profesor, nombre: $scope.asignacion.nombre_profesor, tipo_asignacion: $scope.asignacion.tipo_asignacion }, grupos: gruposAEnviar };
+                
+                if ($scope.asignacion.tipo_asignacion === 'DESCARGA') {
+                    payload.profesor_receptor = { codigo: $scope.asignacion.receptor_codigo, nombre: $scope.asignacion.receptor_nombre };
+                }
+
+                $scope.guardandoAsignacion = true; 
+                $http.post($scope.config.API_URL, JSON.stringify(payload), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
+                    .then(function(res) {
+                        $scope.guardandoAsignacion = false;
+                        if (res.data.status === 'success') { 
+                            alert("✅ " + res.data.message); 
+                            $scope.sincronizarSistema(); 
                             $scope.resultadosBusqueda.forEach(r => r.seleccionado = false);
                             $scope.registrosBD.forEach(r => r.seleccionado = false);
                             $scope.criterioBusqueda.clave = ""; 
@@ -1661,6 +1715,7 @@
                 return cargaTotal; 
             };
             */
+           /*
             $scope.calcularCargaSeleccionada = function() { 
                 let cargaTotal = 0; 
                 let idsContados = new Set();
@@ -1669,6 +1724,27 @@
                     if (!r.seleccionado) return;
                     if (idsContados.has(r.id)) return; // evita doble conteo si aparece en ambas listas
                     idsContados.add(r.id);
+                    cargaTotal += (parseFloat(r.carga_horaria) || 0);
+                };
+
+                if ($scope.resultadosBusqueda) $scope.resultadosBusqueda.forEach(sumar);
+                if ($scope.registrosBD) $scope.registrosBD.forEach(sumar);
+                return cargaTotal; 
+            };*/
+            // Nuevo
+            $scope.calcularCargaSeleccionada = function() { 
+                let cargaTotal = 0; 
+                // Usamos una firma compuesta en lugar de r.id
+                let firmasContadas = new Set();
+
+                const sumar = function(r) {
+                    if (!r.seleccionado) return;
+                    // Creamos una huella digital de la fila (Ej: "212967_M_09:00")
+                    let firmaUnica = r.crn + "_" + $scope.formatearDiasStr(r) + "_" + r.hora_inicio;
+                    
+                    if (firmasContadas.has(firmaUnica)) return; // Evita doble conteo si seleccionó en ambas tablas
+                    
+                    firmasContadas.add(firmaUnica);
                     cargaTotal += (parseFloat(r.carga_horaria) || 0);
                 };
 
