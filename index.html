@@ -1830,9 +1830,34 @@
 
             $scope.exportarExcelMisAsignaciones = function() {
                 let filtrados = $scope.asignacionesFiltradas();
-                let data = filtrados.map(a => ({ "CRN": a.crn, "Clave": a.clave_materia, "Materia": a.materia, "Días Impartición": a.dias, "Horario": a.horario, "Código Profesor": a.codigo_profesor, "Nombre Profesor": a.nombre_profesor, "Tipo de Asignación": a.tipo_asignacion, "Departamento de la Materia": a.departamento_materia, "Carga Sumada (Hrs)": a.carga_total }));
+                let data = filtrados.map(a => {
+                    // Extraemos la información global del profesor basándonos en su código
+                    let profesorGlobal = $scope.profesoresBD.find(p => p.codigo.toString() === (a.codigo_profesor || "").toString());
+                    let cargaTotalProfesor = profesorGlobal ? profesorGlobal.carga_efectiva : 0;
+
+                    return { 
+                        "CRN": a.crn, 
+                        "Clave": a.clave_materia, 
+                        "Materia": a.materia, 
+                        "Días Impartición": a.dias, 
+                        "Horario": a.horario, 
+                        "Código Profesor": a.codigo_profesor, 
+                        "Nombre Profesor": a.nombre_profesor, 
+                        "Tipo de Asignación": a.tipo_asignacion, 
+                        "Departamento de la Materia": a.departamento_materia, 
+                        "Carga Sumada (Hrs)": a.carga_total,
+                        "Carga Total Asignada (Hrs)": cargaTotalProfesor
+                    };
+                });
+                
+                // Ordenar el arreglo exclusivamente para el Excel por 'Nombre Profesor' de A a Z
+                data.sort((a, b) => (a["Nombre Profesor"] || "").localeCompare(b["Nombre Profesor"] || ""));
+
                 if(data.length === 0) { alert("No hay datos."); return; }
-                let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Historial Activo"); XLSX.writeFile(wb, "Historial_Asignaciones_Global_2026B.xlsx");
+                let ws = XLSX.utils.json_to_sheet(data); 
+                let wb = XLSX.utils.book_new(); 
+                XLSX.utils.book_append_sheet(wb, ws, "Historial Activo"); 
+                XLSX.writeFile(wb, "Historial_Asignaciones_Global_2026B.xlsx");
             };
 
             $scope.exportarReporteAulas = function() {
