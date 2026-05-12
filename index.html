@@ -1833,7 +1833,10 @@
                 let data = filtrados.map(a => {
                     // Extraemos la información global del profesor basándonos en su código
                     let profesorGlobal = $scope.profesoresBD.find(p => p.codigo.toString() === (a.codigo_profesor || "").toString());
+                    
                     let cargaTotalProfesor = profesorGlobal ? profesorGlobal.carga_efectiva : 0;
+                    // Extraemos el tipo de contratación (tipo_categoria)
+                    let tipoContratacion = profesorGlobal ? (profesorGlobal.tipo_categoria || "-") : "-";
 
                     return { 
                         "CRN": a.crn, 
@@ -1846,7 +1849,8 @@
                         "Tipo de Asignación": a.tipo_asignacion, 
                         "Departamento de la Materia": a.departamento_materia, 
                         "Carga Sumada (Hrs)": a.carga_total,
-                        "Carga Total Asignada (Hrs)": cargaTotalProfesor
+                        "Carga Total Asignada (Hrs)": cargaTotalProfesor,
+                        "Tipo de contratación": tipoContratacion // Nueva columna final
                     };
                 });
                 
