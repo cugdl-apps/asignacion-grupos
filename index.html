@@ -1814,11 +1814,38 @@
 
                 let data = filtrados.map(g => {
                     let crnStr = (g.crn || "").toString();
-                    return { "Semestre": g.semestre, "CRN": g.crn, "Clave": g.clave, "Materia": g.materia, "Grupo": g.grupo, "Programa Educativo": g.programa_educativo, "Carga (Hrs)": g.carga_horaria, "Horario": $scope.formatHoraLimpia(g.hora_inicio) + " - " + $scope.formatHoraLimpia(g.hora_fin), "Cupo": g.cupo, "Departamento Materia": g.departamento, "Estado Actual": crnsAsignados.includes(crnStr) ? "Asignado" : "Sin asignar" };
+
+                    // Lógica para determinar los días de impartición
+                    let diasArr = [];
+                    if (g.l) diasArr.push("L");
+                    if (g.m) diasArr.push("M");
+                    if (g.i) diasArr.push("I");
+                    if (g.j) diasArr.push("J");
+                    if (g.v) diasArr.push("V");
+                    if (g.s) diasArr.push("S");
+                    let diasFinal = diasArr.join(", ") || "N/A";
+
+                    return { 
+                        "Semestre": g.semestre, 
+                        "CRN": g.crn, 
+                        "Clave": g.clave, 
+                        "Materia": g.materia, 
+                        "Grupo": g.grupo, 
+                        "Programa Educativo": g.programa_educativo, 
+                        "Carga (Hrs)": g.carga_horaria, 
+                        "Día": diasFinal, // Nueva columna insertada
+                        "Horario": $scope.formatHoraLimpia(g.hora_inicio) + " - " + $scope.formatHoraLimpia(g.hora_fin), 
+                        "Cupo": g.cupo, 
+                        "Departamento Materia": g.departamento, 
+                        "Estado Actual": crnsAsignados.includes(crnStr) ? "Asignado" : "Sin asignar" 
+                    };
                 });
                 
                 if(data.length === 0) { alert("No hay datos para exportar."); return; }
-                let ws = XLSX.utils.json_to_sheet(data); let wb = XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb, ws, "Catálogo 2026B"); XLSX.writeFile(wb, "Catalogo_Grupos_Estado_2026B.xlsx");
+                let ws = XLSX.utils.json_to_sheet(data); 
+                let wb = XLSX.utils.book_new(); 
+                XLSX.utils.book_append_sheet(wb, ws, "Catálogo 2026B"); 
+                XLSX.writeFile(wb, "Catalogo_Grupos_Estado_2026B.xlsx");
             };
 
             $scope.exportarExcelProfesores = function() {
