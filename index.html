@@ -871,6 +871,7 @@
                                     <th class="px-3 py-2 font-semibold">CRN</th>
                                     <th class="px-3 py-2 font-semibold">Clave</th>
                                     <th class="px-3 py-2 font-semibold w-48">Materia</th>
+                                    <th class="px-3 py-2 font-bold uppercase text-center">PE</th> <!--DATO NUEVO-->
                                     <th class="px-3 py-2 font-semibold text-center">Días</th>
                                     <th class="px-3 py-2 font-semibold text-center">Horario</th>
                                     <th class="px-3 py-2 font-semibold">Código Prof.</th>
@@ -886,6 +887,7 @@
                                     <td class="px-3 py-2 font-mono text-gray-600 font-bold">{{asig.crn}}</td>
                                     <td class="px-3 py-2 font-bold">{{asig.clave_materia}}</td>
                                     <td class="px-3 py-2 truncate max-w-xs" title="{{asig.materia}}">{{asig.materia}}</td>
+                                    <td class="px-3 py-3 text-center text-xs font-semibold text-gray-600 truncate max-w-[120px]" title="{{asig.programa_educativo}}">{{asig.programa_educativo}}</td> <!--DATO NUEVO-->
                                     <td class="px-3 py-2 text-center font-bold text-gray-800">{{asig.dias}}</td>
                                     <td class="px-3 py-2 text-center font-mono">{{asig.horario}}</td>
                                     <td class="px-3 py-2 font-mono">{{asig.codigo_profesor}}</td>
@@ -1395,6 +1397,7 @@
                             agrupados[aCrnStr] = {
                                 crn: a.crn, clave_materia: a.clave_materia, 
                                 materia: a.materia || (infoBase ? infoBase.materia : "Materia Desconocida"), 
+                                programa_educativo: infoBase ? infoBase.programa_educativo : "-", // <-- DATO NUEVO
                                 dias_lista: [],
                                 horario: $scope.formatHoraLimpia(hInicio) + " - " + $scope.formatHoraLimpia(hFin),
                                 codigo_profesor: a.codigo_profesor, nombre_profesor: a.nombre_profesor, 
@@ -1418,6 +1421,7 @@
                                 agrupados[cobKey] = {
                                     crn: a.crn, clave_materia: a.clave_materia, 
                                     materia: a.materia || (infoBase ? infoBase.materia : "Materia Desconocida"), 
+                                    programa_educativo: infoBase ? infoBase.programa_educativo : "-", // <-- DATO NUEVO
                                     dias_lista: [],
                                     horario: $scope.formatHoraLimpia(hInicio) + " - " + $scope.formatHoraLimpia(hFin),
                                     codigo_profesor: a.codigo_profesor_cubre, nombre_profesor: a.nombre_profesor_cubre, 
@@ -1869,6 +1873,7 @@
                         "CRN": a.crn, 
                         "Clave": a.clave_materia, 
                         "Materia": a.materia, 
+                        "PE": a.programa_educativo, // <-- DATO NUEVO
                         "Días Impartición": a.dias, 
                         "Horario": a.horario, 
                         "Código Profesor": a.codigo_profesor, 
