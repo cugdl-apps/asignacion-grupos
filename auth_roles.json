@@ -100,7 +100,7 @@
       "correo": "luis.saldana@cugdl.udg.mx",
       "nombre_completo": "Mtro. Luis Fernando Saldaña Pérez",
       "puesto": "Coordinador de Personal",
-      "rol": "ADMIN",
+      "rol": "ESCOLAR",
       "departamentos_acceso": ["TODOS"]
     },
     {
@@ -207,6 +207,13 @@
       "puesto": "Jefe(a) de Departamento",
       "rol": "DEPTO",
       "departamentos_acceso": ["DEP_8"]
+    },
+    {
+      "correo": "margarita.flores@cugdl.udg.mx",
+      "nombre_completo": "Margarita Flores",
+      "puesto": "Unidad de personal académico",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
     }
   ]
 }
