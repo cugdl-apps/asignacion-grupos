@@ -196,14 +196,14 @@
     },
     {
       "correo": "dpto.innovacion.social@cugdl.udg.mx",
-      "nombre_completo": "Dra. Ana Marcela Torres Villanueva",
+      "nombre_completo": "Dr. Ricardo Pérez Mora",
       "puesto": "Jefe(a) de Departamento",
       "rol": "DEPTO",
       "departamentos_acceso": ["DEP_7"]
     },
     {
       "correo": "dpto.innovacion.tecnologica@cugdl.udg.mx",
-      "nombre_completo": "Dra. María de la Paz Arroyo Arciniega",
+      "nombre_completo": "Dr. Gladstone Oliva Iñiguez",
       "puesto": "Jefe(a) de Departamento",
       "rol": "DEPTO",
       "departamentos_acceso": ["DEP_8"]
@@ -212,6 +212,41 @@
       "correo": "margarita.flores@cugdl.udg.mx",
       "nombre_completo": "Margarita Flores",
       "puesto": "Unidad de personal académico",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "ciberseguridad@cugdl.udg.mx",
+      "nombre_completo": "Mtro. Carlos Eugenio Lomas Moreno",
+      "puesto": "Coordinador de Carrera",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "creatividad.digital@cugdl.udg.mx",
+      "nombre_completo": "Mtra. Marifer Salas Garciabada",
+      "puesto": "Coordinadora de Carrera",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "inteligencia.artificial@cugdl.udg.mx",
+      "nombre_completo": "Mtro. José Ángel Domínguez Ramírez",
+      "puesto": "Coordinador de Carrera",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "inteligencia.financiera@cugdl.udg.mx",
+      "nombre_completo": "Dr. Ismael Loza Vega",
+      "puesto": "Coordinador de Carrera",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "tecnologias.biomedicas@cugdl.udg.mx",
+      "nombre_completo": "Mtra. Xochitl Citlalli Jiménez Román",
+      "puesto": "Coordinadora de Carrera",
       "rol": "ESCOLAR",
       "departamentos_acceso": ["TODOS"]
     }
