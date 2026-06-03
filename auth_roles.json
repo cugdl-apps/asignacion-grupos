@@ -249,6 +249,13 @@
       "puesto": "Coordinadora de Carrera",
       "rol": "ESCOLAR",
       "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "pablo.gonzalez@cugdl.udg.mx",
+      "nombre_completo": "Mtro. Pablo González García",
+      "puesto": "Coordinador de Servicios Académicos",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
     }
   ]
 }
