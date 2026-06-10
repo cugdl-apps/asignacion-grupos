@@ -256,6 +256,13 @@
       "puesto": "Coordinador de Servicios Académicos",
       "rol": "ESCOLAR",
       "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "monica.carrillo@cugdl.udg.mx",
+      "nombre_completo": "Mónica Carrillo",
+      "puesto": "Asistente en la Coordinación de Programas Académicos",
+      "rol": "ADMIN",
+      "departamentos_acceso": ["TODOS"]
     }
   ]
 }
