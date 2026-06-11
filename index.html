@@ -86,10 +86,19 @@
                     </div>
                 </div>
                 
-                <div class="text-right bg-blue-50 p-3 rounded border border-blue-200 shadow-sm hidden md:block">
-                    <p class="font-bold text-blue-900 uppercase text-sm">{{perfil.nombre_completo}}</p>
-                    <p class="text-blue-700 font-semibold text-xs">{{perfil.puesto}}</p>
-                    <p class="text-gray-500 italic text-xs">{{perfil.correo}}</p>
+                <div class="flex items-center gap-6">
+                    <div class="text-right bg-blue-50 p-3 rounded border border-blue-200 shadow-sm hidden md:block">
+                        <p class="font-bold text-blue-900 uppercase text-sm">{{perfil.nombre_completo}}</p>
+                        <p class="text-blue-700 font-semibold text-xs">{{perfil.puesto}}</p>
+                        <p class="text-gray-500 italic text-xs">{{perfil.correo}}</p>
+                    </div>
+                    
+                    <button ng-click="cerrarSesion()" class="text-gray-400 hover:text-red-500 transition-colors duration-300 flex flex-col items-center gap-1 group focus:outline-none" title="Cerrar sesión">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 group-hover:scale-110 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                        </svg>
+                        <span class="text-[9px] font-bold uppercase tracking-wider">Salir</span>
+                    </button>
                 </div>
             </div>
         </header>
@@ -114,11 +123,6 @@
                         class="tab-btn">
                     Catálogo Profesores
                 </button>
-                <button ng-click="cambiarVista('aulas')" 
-                        ng-class="vistaPrincipal == 'aulas' ? 'tab-btn-active-orange' : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'" 
-                        class="tab-btn">
-                    Aulas y Espacios
-                </button>
                 <button ng-click="cambiarVista('mis_asignaciones')" 
                         ng-class="vistaPrincipal == 'mis_asignaciones' ? 'tab-btn-active-green' : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'" 
                         class="tab-btn">
@@ -128,6 +132,11 @@
                         ng-class="vistaPrincipal == 'descargas' ? 'tab-btn-active-teal' : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'" 
                         class="tab-btn">
                     Descargas
+                </button>
+                <button ng-click="cambiarVista('aulas')" 
+                        ng-class="vistaPrincipal == 'aulas' ? 'tab-btn-active-orange' : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'" 
+                        class="tab-btn">
+                    Aulas y Espacios
                 </button>
                 <button ng-click="cambiarVista('estadisticas')" 
                         ng-class="vistaPrincipal == 'estadisticas' ? 'tab-btn-active-yellow' : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900'" 
@@ -1157,6 +1166,32 @@
                         $timeout(function() { $scope.errorLogin = "Acceso denegado: Correo sin permisos institucionales."; }); 
                     }
                 } catch (err) { $timeout(function() { $scope.errorLogin = "Error técnico al leer identidad de Google."; }); }
+            };
+
+            // ======================================================================
+            // CIERRE DE SESIÓN
+            // ======================================================================
+            $scope.cerrarSesion = function() {
+                if (confirm("¿Estás seguro de que deseas cerrar tu sesión?")) {
+                    
+                    // 1. Le decimos a Google que olvide la credencial temporalmente
+                    if (window.google && google.accounts && google.accounts.id) {
+                        google.accounts.id.disableAutoSelect();
+                    }
+                    
+                    // 2. Detenemos el reloj de sincronización silenciosa (Polling)
+                    if (typeof syncInterval !== 'undefined' && syncInterval) {
+                        $interval.cancel(syncInterval);
+                    }
+                    
+                    // 3. Limpiamos la memoria local
+                    $scope.usuarioAutenticado = false;
+                    $scope.perfil = {};
+                    $scope.correoUsuario = "";
+                    
+                    // 4. Forzamos recarga para purgar por completo el caché de variables en memoria
+                    window.location.reload();
+                }
             };
 
             // ======================================================================
