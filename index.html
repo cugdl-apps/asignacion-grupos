@@ -1732,7 +1732,35 @@
             };
 
             $scope.formatearDias = $scope.formatearDiasStr;
+            /*NUEVO*/
+            $scope.esPresencialStr = function(g) {
+                if (!g) return false;
 
+                // 1. Limpiamos y formateamos los días de la materia (Ej: "S" o "M, J")
+                let dias = $scope.formatearDiasStr(g).trim().toUpperCase();
+                
+                // 2. Extraemos y limpiamos los textos de horario
+                let hInicio = (g.hora_inicio || "").toString().trim();
+                let hFin = (g.hora_fin || "").toString().trim();
+                let depto = (g.departamento || "").toString().toUpperCase();
+                let nombreMateria = (g.materia || "").toString().toUpperCase();
+
+                // CONDICIÓN FULMINANTE: Si tiene días asignados válidos y cuenta con horario real,
+                // pasa automáticamente como materia asignable a aula, ignorando etiquetas confusas.
+                if (dias !== "N/A" && dias !== "S/H" && hInicio !== "" && hFin !== "00:00" && hFin !== "") {
+                    
+                    // Candado de seguridad por si existen excepciones absolutas de oficina/coordinación
+                    if (nombreMateria.includes("EVALUACION CORRESPONDIENTE") || depto.includes("VIRTUAL_EXCLUSIVO")) {
+                        return false;
+                    }
+                    
+                    return true; // Requiere aula físicamente
+                }
+
+                // Si no tiene días ni horarios (es asíncrona pura), entonces es Virtual
+                return false;
+            };
+            /*
             $scope.esPresencialStr = function(g) {
                 if(!g || !g.materia) return false;
                 let pe = (g.pe || g.PE || "").toString().toUpperCase();
@@ -1746,6 +1774,8 @@
                 let n = g.materia.toUpperCase();
                 return (dias !== "N/A" && n.indexOf("VIRTUAL") === -1 && n.indexOf("S/H") === -1);
             };
+            */
+
             /*
             $scope.calcularCargaSeleccionada = function() { 
                 let cargaTotal = 0; 
