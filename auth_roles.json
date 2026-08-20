@@ -263,6 +263,13 @@
       "puesto": "Asistente en la Coordinación de Programas Académicos",
       "rol": "ADMIN",
       "departamentos_acceso": ["TODOS"]
+    },
+    {
+      "correo": "alumnos@cugdl.udg.mx",
+      "nombre_completo": "Control Escolar",
+      "puesto": "Asistente de la Coordinación de Control Escolar",
+      "rol": "ESCOLAR",
+      "departamentos_acceso": ["TODOS"]
     }
   ]
 }
