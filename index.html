@@ -1126,15 +1126,20 @@
             let chartAulas, chartMaterias, chartProfes, chartProgramas, chartDepartamentos;
 
             // ======================================================================
-            // 1. INICIALIZACIÓN Y CONFIGURACIÓN (ARRANQUE)
+            // 1. INICIALIZACIÓN Y CONFIGURACIÓN 
             // ======================================================================
+            const BOVEDA_URL = "https://script.google.com/macros/s/AKfycbyRZFqJG8jtw5_70ZV4myJpV38A7jDsL_UMO69WZBebo0T0QvwqnVup3X2LxgBhl_YP-g/exec";
+
             window.onload = function () {
                 let pCat = $http.get("categorias_profesores.json").catch(function() { return { data: { categorias: [] } }; });
                 let pAul = $http.get("aulas.json").catch(function() { return { data: [] }; });
 
+                // Agregamos un cache buster para que siempre traiga los roles más frescos
+                let cacheBuster = "&t=" + new Date().getTime();
+
                 $q.all([
-                    $http.get("config.json"),
-                    $http.get("auth_roles.json"),
+                    $http.get(BOVEDA_URL + "?archivo=config" + cacheBuster),
+                    $http.get(BOVEDA_URL + "?archivo=auth_roles" + cacheBuster),
                     pCat, pAul
                 ]).then(function(res) {
                     $scope.config = res[0].data;
@@ -1145,8 +1150,8 @@
                     google.accounts.id.initialize({ client_id: $scope.config.CLIENT_ID, callback: handleCredentialResponse });
                     google.accounts.id.renderButton(document.getElementById("googleButtonDiv"), { theme: "outline", size: "large", width: 300 });
                 }).catch(function(error) {
-                    console.error("Falla en la carga inicial:", error);
-                    $scope.errorLogin = "Error crítico: Faltan archivos JSON en el servidor local.";
+                    console.error("Falla en la carga inicial desde la bóveda:", error);
+                    $scope.errorLogin = "Error de conexión: No se pudo enlazar con la bóveda de seguridad institucional.";
                 });
             };
 
@@ -1641,50 +1646,6 @@
                     } 
                 });
             };
-            /*
-            $scope.vincularProfesor = function() {
-                if (!$scope.puedeGuardarAsignacion()) return;
-                let gruposAEnviar = [];
-                
-                // Recolectar desde Búsqueda Rápida
-                $scope.resultadosBusqueda.forEach(r => {
-                    if (r.seleccionado) gruposAEnviar.push({ id_registro_json: r.id, crn: r.crn, materia: r.materia, clave_materia: r.clave, carga_horaria: r.carga_horaria, dias: $scope.formatearDiasStr(r), hora_inicio: $scope.formatHoraLimpia(r.hora_inicio), hora_fin: $scope.formatHoraLimpia(r.hora_fin) });
-                });
-
-                // Recolectar desde Catálogo General
-                $scope.registrosBD.forEach(r => {
-                    if (r.seleccionado) {
-                        // Evitar duplicados si por casualidad estaba en ambas listas
-                        if (!gruposAEnviar.find(x => x.crn === r.crn)) {
-                            gruposAEnviar.push({ id_registro_json: r.id, crn: r.crn, materia: r.materia, clave_materia: r.clave, carga_horaria: r.carga_horaria, dias: $scope.formatearDiasStr(r), hora_inicio: $scope.formatHoraLimpia(r.hora_inicio), hora_fin: $scope.formatHoraLimpia(r.hora_fin) });
-                        }
-                    }
-                });
-                
-                let payload = { accion: 'ASIGNAR_GRUPOS', ciclo_escolar: '2026B', usuario: $scope.perfil.correo, profesor: { codigo: $scope.asignacion.codigo_profesor, nombre: $scope.asignacion.nombre_profesor, tipo_asignacion: $scope.asignacion.tipo_asignacion }, grupos: gruposAEnviar };
-                
-                if ($scope.asignacion.tipo_asignacion === 'DESCARGA') {
-                    payload.profesor_receptor = { codigo: $scope.asignacion.receptor_codigo, nombre: $scope.asignacion.receptor_nombre };
-                }
-
-                $scope.guardandoAsignacion = true; 
-                $http.post($scope.config.API_URL, JSON.stringify(payload), { headers: { 'Content-Type': 'text/plain;charset=utf-8' } })
-                    .then(function(res) {
-                        $scope.guardandoAsignacion = false;
-                        if (res.data.status === 'success') { 
-                            alert("✅ " + res.data.message); 
-                            $scope.sincronizarSistema(); 
-                            // Limpiar selecciones
-                            $scope.resultadosBusqueda.forEach(r => r.seleccionado = false);
-                            $scope.registrosBD.forEach(r => r.seleccionado = false);
-                            $scope.criterioBusqueda.clave = ""; 
-                            $scope.busquedaCatalogoLibre = "";
-                            $scope.limpiarBusquedaProfesor(); 
-                        } 
-                        else if (res.data.status === 'error_empalme') { alert("❌ CONFLICTO DE HORARIO:\n\n" + res.data.message); } 
-                        else { alert("⚠️ Error: " + res.data.message); }
-                    }).catch(function() { $scope.guardandoAsignacion = false; alert("Error de comunicación."); });
-            };*/
 
             $scope.vincularProfesor = function() {
                 if (!$scope.puedeGuardarAsignacion()) return;
@@ -1854,48 +1815,7 @@
                 // Si no tiene días ni horarios (es asíncrona pura), entonces es Virtual
                 return false;
             };
-            /*
-            $scope.esPresencialStr = function(g) {
-                if(!g || !g.materia) return false;
-                let pe = (g.pe || g.PE || "").toString().toUpperCase();
-                let mod = (g.modalidad || g.MODALIDAD || "").toString().toUpperCase();
-                let tipoAula = (g.tipo_aula || g.TIPO_AULA || "").toString().toUpperCase();
 
-                // Evaluamos que el TIPO_AULA del JSON no sea VIRTUAL
-                if (pe.includes("VIRTUAL") || mod.includes("VIRTUAL") || tipoAula.includes("VIRTUAL")) return false;
-
-                let dias = $scope.formatearDiasStr(g); 
-                let n = g.materia.toUpperCase();
-                return (dias !== "N/A" && n.indexOf("VIRTUAL") === -1 && n.indexOf("S/H") === -1);
-            };
-            */
-
-            /*
-            $scope.calcularCargaSeleccionada = function() { 
-                let cargaTotal = 0; 
-                let crnsContados = new Set();
-                if ($scope.resultadosBusqueda) { $scope.resultadosBusqueda.forEach(r => { if (r.seleccionado && !crnsContados.has(r.crn)) { cargaTotal += parseFloat(r.carga_horaria) || 0; crnsContados.add(r.crn); } }); } 
-                if ($scope.registrosBD) { $scope.registrosBD.forEach(r => { if (r.seleccionado && !crnsContados.has(r.crn)) { cargaTotal += parseFloat(r.carga_horaria) || 0; crnsContados.add(r.crn); } }); } 
-                return cargaTotal; 
-            };
-            */
-           /*
-            $scope.calcularCargaSeleccionada = function() { 
-                let cargaTotal = 0; 
-                let idsContados = new Set();
-
-                const sumar = function(r) {
-                    if (!r.seleccionado) return;
-                    if (idsContados.has(r.id)) return; // evita doble conteo si aparece en ambas listas
-                    idsContados.add(r.id);
-                    cargaTotal += (parseFloat(r.carga_horaria) || 0);
-                };
-
-                if ($scope.resultadosBusqueda) $scope.resultadosBusqueda.forEach(sumar);
-                if ($scope.registrosBD) $scope.registrosBD.forEach(sumar);
-                return cargaTotal; 
-            };*/
-            // Nuevo
             $scope.calcularCargaSeleccionada = function() { 
                 let cargaTotal = 0; 
                 // Usamos una firma compuesta en lugar de r.id
