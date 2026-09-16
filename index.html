@@ -1909,6 +1909,27 @@
                     if (g.s) diasArr.push("S");
                     let diasFinal = diasArr.join(", ") || "N/A";
 
+                    // Buscar el registro pre-procesado en la tabla de cruce maestro
+                    let cruceItem = $scope.tablaCruceAulas.find(c => c.id_registro_json === g.id);
+                    
+                    // Valores por defecto por si el cruce maestro no ha cargado (seguridad)
+                    let codProf = "-";
+                    let nomProf = "Sin Asignar";
+                    let tipoAsig = "-";
+                    let esPresencial = $scope.esPresencialStr(g);
+                    let valorAula = esPresencial ? "Sin Asignar" : "No aplica";
+                    let valorTipoEspacio = esPresencial ? "-" : "No aplica";
+
+                    // Si existe en el cruce maestro, extraemos los datos precisos
+                    if (cruceItem) {
+                        codProf = cruceItem.codigo_profesor || "-";
+                        nomProf = cruceItem.nombre_profesor || "Sin Asignar";
+                        tipoAsig = cruceItem.tipo_asignacion || "-";
+                        esPresencial = cruceItem.es_presencial;
+                        valorAula = esPresencial ? (cruceItem.nomenclatura_aula || "Sin Asignar") : "No aplica";
+                        valorTipoEspacio = esPresencial ? (cruceItem.espacio_aula || "-") : "No aplica";
+                    }
+
                     return { 
                         "Semestre": g.semestre, 
                         "CRN": g.crn, 
@@ -1917,11 +1938,18 @@
                         "Grupo": g.grupo, 
                         "Programa Educativo": g.programa_educativo, 
                         "Carga (Hrs)": g.carga_horaria, 
-                        "Día": diasFinal, // Nueva columna insertada
+                        "Día": diasFinal,
                         "Horario": $scope.formatHoraLimpia(g.hora_inicio) + " - " + $scope.formatHoraLimpia(g.hora_fin), 
                         "Cupo": g.cupo, 
                         "Departamento Materia": g.departamento, 
-                        "Estado Actual": crnsAsignados.includes(crnStr) ? "Asignado" : "Sin asignar" 
+                        "Estado Actual": crnsAsignados.includes(crnStr) ? "Asignado" : "Sin asignar",
+                        // --- CAMPOS INTEGRADOS DEL REPORTE DE AULAS ---
+                        "Código Prof.": codProf,
+                        "Profesor Asignado": nomProf,
+                        "Tipo Asignación": tipoAsig,
+                        "Presencial": esPresencial ? "SÍ" : "NO",
+                        "Aula / Espacio Asignado": valorAula,
+                        "Tipo de Espacio": valorTipoEspacio
                     };
                 });
                 
